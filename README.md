@@ -4,7 +4,7 @@
 
 | Name | NEU ID | Email Address |
 | --- | --- | --- |
-| | | |
+|Chuanlu Lin|001839299|lin.chua@husky.neu.edu|
 | | | |
 | | | |
 | | | |
