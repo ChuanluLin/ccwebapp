@@ -39,9 +39,13 @@ public class UserController {
         String email = userMap.get("email_address").toString();
         User user_db = userRepository.findByEmail(email);
         String password = userMap.get("password").toString();
+        String first_name = userMap.get("first_name").toString();
+        String last_name = userMap.get("last_name").toString();
         if (user_db != null) {
 //            response.sendError(HttpStatus.BAD_REQUEST.value(), "The email is exist!");
             return new ResponseEntity<>("The email exists! Please try again", HttpStatus.BAD_REQUEST);
+        } else if(first_name == null || last_name == null){
+            return new ResponseEntity<>("Name is empty!", HttpStatus.BAD_REQUEST);
         } else if (!isEmail(email)) {
             return new ResponseEntity<>("Invalid email! Please try again!", HttpStatus.BAD_REQUEST);
         } else if (!isStrongPassword(password)) {
@@ -51,9 +55,9 @@ public class UserController {
             String pw_hash = BCrypt.hashpw(password, BCrypt.gensalt());
             newUser.setPassword(pw_hash);
 
-            newUser.setEmail(userMap.get("email_address").toString());
-            newUser.setFirst_name(userMap.get("first_name").toString());
-            newUser.setLast_name(userMap.get("last_name").toString());
+            newUser.setEmail(email);
+            newUser.setFirst_name(first_name);
+            newUser.setLast_name(last_name);
 
             //time
             newUser.setAccount_created(getDatetime());
