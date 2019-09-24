@@ -1,8 +1,12 @@
 package com.csye6225.demo.controller;
 
 import com.csye6225.demo.pojo.User;
-import com.csye6225.demo.repository.UserRespository;
+import com.csye6225.demo.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -15,56 +19,66 @@ import java.util.Map;
 @RestController
 public class UserController {
 
-//    @ExceptionHandler
-//    public void illegalRegister(IllegalArgumentException e, HttpServletResponse response) throws IOException {
-//        response.sendError(HttpStatus.BAD_REQUEST.value(),"The email is exist!");
+    @Autowired
+    private UserRepository userRepository;
+
+//    @ExceptionHandler({IllegalArgumentException.class, NullPointerException.class})
+//    public void illegalRegisterException(HttpServletResponse response) throws IOException {
+//        response.sendError(HttpStatus.BAD_REQUEST.value(),"The email is exist! Please try again!");
 //    }
 
 
     @RequestMapping(path = "/user", method = RequestMethod.POST)
-    public User create(@RequestBody Map<String, String> payload, HttpServletResponse response) throws IOException {
-//        for(User u: UserRespository.findAll()){
-//            if(u.getEmail().equals(payload.get("email_address"))){
-////                throw new illegalRegister();
-//                response.sendError(HttpStatus.BAD_REQUEST.value(),"The email is exist!");
-//            }
-//        }
+    public ResponseEntity<String> create(@RequestBody String userJSON, HttpServletResponse response) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        HashMap userMap = mapper.readValue(userJSON, HashMap.class);
 
-        User user = new User();
+        User newUser = new User();
 
         //user exist
-        User user_db = UserRespository.findByEmail(payload.get("email_address"));
-        if(user_db != null)
-            response.sendError(HttpStatus.BAD_REQUEST.value(),"The email is exist!");
+        String email = userMap.get("email_address").toString();
+        User user_db = userRepository.findByEmail(email);
+        String password = userMap.get("password").toString();
+        if (user_db != null) {
+//            response.sendError(HttpStatus.BAD_REQUEST.value(), "The email is exist!");
+            return new ResponseEntity<>("The email exists! Please try again", HttpStatus.BAD_REQUEST);
+        } else if (!isEmail(email)) {
+            return new ResponseEntity<>("Invalid email! Please try again!", HttpStatus.BAD_REQUEST);
+        } else if (!isStrongPassword(password)) {
+            return new ResponseEntity<>("Need a strong password! Please try again!", HttpStatus.BAD_REQUEST);
+        } else {
+            //password
+            String pw_hash = BCrypt.hashpw(password, BCrypt.gensalt());
+            newUser.setPassword(pw_hash);
 
-        //strong password
+            newUser.setEmail(userMap.get("email_address").toString());
+            newUser.setFirst_name(userMap.get("first_name").toString());
+            newUser.setLast_name(userMap.get("last_name").toString());
 
-        //password
-        String pw_hash = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
-        user.setPassword(pw_hash);
+            //time
+            newUser.setAccount_created(getDatetime());
+            newUser.setAccount_updated(getDatetime());
 
+            userRepository.save(newUser);
+            String newUserJSON = mapper.writeValueAsString(newUser);
 
+            return new ResponseEntity<>(newUserJSON, HttpStatus.CREATED);
+        }
+    }
 
-
-        user.setEmail(payload.get("email_address"));
-        user.setFirst_name(payload.get("first_name"));
-        user.setLast_name(payload.get("last_name"));
-
-        //time
-        //need a filter for these 2 time
+    public String getDatetime() {
         Date currentTime = new Date();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS Z");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         String dateString = format.format(currentTime);
-        user.setAccount_created(dateString);
-        user.setAccount_updated(dateString);
+        return dateString;
+    }
 
-        //need a filter to hide password
+    public boolean isEmail(String email) {
+        return email.matches("[a-zA-Z0-9_]+@[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)+");
+    }
 
-
-
-
-        return user;
-
+    public boolean isStrongPassword(String password) {
+        return password.matches("^(?=.*\\d)(?=.*[a-zA-Z])(?=.*[\\W])[\\da-zA-Z\\W]{8,}$");
     }
 
 
