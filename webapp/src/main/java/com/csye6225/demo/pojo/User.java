@@ -1,27 +1,29 @@
 package com.csye6225.demo.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name="user")
+@GenericGenerator(name = "jpa-uuid", strategy = "uuid")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="id", unique = true, nullable = false)
+    @GeneratedValue(generator = "jpa-uuid")
+    @Column(name="id", unique = true, nullable = false, length = 32)
     private String id;
 
-    @Column(name = "email")
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "first_name")
+    @Column(name = "first_name", nullable = false)
     private String first_name;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", nullable = false)
     private String last_name;
 
     @Column(name = "account_created")
