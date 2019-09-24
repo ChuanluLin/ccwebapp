@@ -6,9 +6,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -28,7 +31,7 @@ public class UserController {
 //    }
 
 
-    @RequestMapping(path = "/user", method = RequestMethod.POST)
+    @RequestMapping(path = "/v1/user", method = RequestMethod.POST)
     public ResponseEntity<String> create(@RequestBody String userJSON, HttpServletResponse response) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         HashMap userMap = mapper.readValue(userJSON, HashMap.class);
@@ -85,7 +88,47 @@ public class UserController {
         return password.matches("^(?=.*\\d)(?=.*[a-zA-Z])(?=.*[\\W])[\\da-zA-Z\\W]{8,}$");
     }
 
+    @RequestMapping(path = "/v1/user/self", method = RequestMethod.PUT)
+    public ResponseEntity<String> update(@RequestBody String userJSON, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findByEmail(auth.getName());
+        ObjectMapper mapper = new ObjectMapper();
+        HashMap userMap = mapper.readValue(userJSON, HashMap.class);
+        String password = userMap.get("password").toString();
+        String first_name = userMap.get("first_name").toString();
+        String last_name = userMap.get("last_name").toString();
+            //password
+        if(!password.equals("") || !first_name.equals("") || !last_name.equals("")) {
+            if((!password.equals(""))){
+                if (!isStrongPassword(password)) {
+                    return new ResponseEntity<>("Need a strong password! Please try again!", HttpStatus.BAD_REQUEST);
+                } else {
+                    String pw_hash = BCrypt.hashpw(password, BCrypt.gensalt());
+                    user.setPassword(pw_hash);
+                }
+            }
+            //name
+            if (!userMap.get("first_name").equals("")) {
+                user.setFirst_name(userMap.get("first_name").toString());
+            }
+            if (!userMap.get("last_name").equals("")) {
+                user.setLast_name(userMap.get("last_name").toString());
+            }
+            //time
+            user.setAccount_updated(getDatetime());
+        }
+        userRepository.save(user);
+        String newUserJSON = mapper.writeValueAsString(user);
+        return new ResponseEntity<>(newUserJSON, HttpStatus.OK);
+    }
 
+    @RequestMapping(path = "/v1/user/self", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<User> GET(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findByEmail(auth.getName());
+        return new ResponseEntity<User>(user,HttpStatus.OK) ;
+    }
 }
 
 
