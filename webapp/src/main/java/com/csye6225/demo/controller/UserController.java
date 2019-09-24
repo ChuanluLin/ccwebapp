@@ -17,19 +17,12 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 public class UserController {
 
     @Autowired
     private UserRepository userRepository;
-
-//    @ExceptionHandler({IllegalArgumentException.class, NullPointerException.class})
-//    public void illegalRegisterException(HttpServletResponse response) throws IOException {
-//        response.sendError(HttpStatus.BAD_REQUEST.value(),"The email is exist! Please try again!");
-//    }
-
 
     @RequestMapping(path = "/v1/user", method = RequestMethod.POST)
     public ResponseEntity<String> create(@RequestBody String userJSON, HttpServletResponse response) throws IOException {
@@ -43,7 +36,6 @@ public class UserController {
         User user_db = userRepository.findByEmail(email);
         String password = userMap.get("password").toString();
         if (user_db != null) {
-//            response.sendError(HttpStatus.BAD_REQUEST.value(), "The email is exist!");
             return new ResponseEntity<>("The email exists! Please try again", HttpStatus.BAD_REQUEST);
         } else if (!isEmail(email)) {
             return new ResponseEntity<>("Invalid email! Please try again!", HttpStatus.BAD_REQUEST);
