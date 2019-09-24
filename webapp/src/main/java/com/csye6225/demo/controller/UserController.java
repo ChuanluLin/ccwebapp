@@ -69,7 +69,13 @@ public class UserController {
         return dateString;
     }
 
+    public boolean isEmail(String email) {
+        return email.matches("[a-zA-Z0-9_]+@[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)+");
+    }
 
+    public boolean isStrongPassword(String password) {
+        return password.matches("^(?=.*\\d)(?=.*[a-zA-Z])(?=.*[\\W])[\\da-zA-Z\\W]{8,}$");
+    }
 
 
 }
