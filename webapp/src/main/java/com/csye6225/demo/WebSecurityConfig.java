@@ -35,7 +35,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic()
                 .and()
                 .authorizeRequests()
-                // "create" will be accessible directly, no need of any authentication
+                // "create" operation will be accessible directly, no need of any authentication
                 .antMatchers( "/v1/user").permitAll()
                 // it's indicate all request in the url will be secure
                 // actually for there is only one user, authenticated() is enough
