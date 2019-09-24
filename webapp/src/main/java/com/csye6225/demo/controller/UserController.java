@@ -25,11 +25,6 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-//    @ExceptionHandler({IllegalArgumentException.class, NullPointerException.class})
-//    public void illegalRegisterException(HttpServletResponse response) throws IOException {
-//        response.sendError(HttpStatus.BAD_REQUEST.value(),"The email is exist! Please try again!");
-//    }
-
 
     @RequestMapping(path = "/v1/user", method = RequestMethod.POST)
     public ResponseEntity<String> create(@RequestBody String userJSON, HttpServletResponse response) throws IOException {
@@ -73,21 +68,6 @@ public class UserController {
         }
     }
 
-    public String getDatetime() {
-        Date currentTime = new Date();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        String dateString = format.format(currentTime);
-        return dateString;
-    }
-
-    public boolean isEmail(String email) {
-        return email.matches("[a-zA-Z0-9_]+@[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)+");
-    }
-
-    public boolean isStrongPassword(String password) {
-        return password.matches("^(?=.*\\d)(?=.*[a-zA-Z])(?=.*[\\W])[\\da-zA-Z\\W]{8,}$");
-    }
-
     @RequestMapping(path = "/v1/user/self", method = RequestMethod.PUT)
     public ResponseEntity<String> update(@RequestBody String userJSON, HttpServletRequest request, HttpServletResponse response) throws IOException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -120,10 +100,30 @@ public class UserController {
 
     @RequestMapping(path = "/v1/user/self", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<User> GET(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ResponseEntity<String> GET(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByEmail(auth.getName());
-        return new ResponseEntity<User>(user,HttpStatus.OK) ;
+
+        ObjectMapper mapper = new ObjectMapper();
+        String userJSON = mapper.writeValueAsString(user);
+        return new ResponseEntity<>(userJSON,HttpStatus.OK) ;
+    }
+
+
+
+    public String getDatetime() {
+        Date currentTime = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        String dateString = format.format(currentTime);
+        return dateString;
+    }
+
+    public boolean isEmail(String email) {
+        return email.matches("[a-zA-Z0-9_]+@[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)+");
+    }
+
+    public boolean isStrongPassword(String password) {
+        return password.matches("^(?=.*\\d)(?=.*[a-zA-Z])(?=.*[\\W])[\\da-zA-Z\\W]{8,}$");
     }
 }
 
