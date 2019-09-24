@@ -42,7 +42,11 @@ public class UserController {
         if (user_db != null) {
 //            response.sendError(HttpStatus.BAD_REQUEST.value(), "The email is exist!");
             return new ResponseEntity<>("The email exists! Please try again", HttpStatus.BAD_REQUEST);
-        }  else {
+        } else if (!isEmail(email)) {
+            return new ResponseEntity<>("Invalid email! Please try again!", HttpStatus.BAD_REQUEST);
+        } else if (!isStrongPassword(password)) {
+            return new ResponseEntity<>("Need a strong password! Please try again!", HttpStatus.BAD_REQUEST);
+        } else {
             //password
             String pw_hash = BCrypt.hashpw(password, BCrypt.gensalt());
             newUser.setPassword(pw_hash);
