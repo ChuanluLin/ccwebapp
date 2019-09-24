@@ -35,10 +35,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic()
                 .and()
                 .authorizeRequests()
-                // index will be accessible directly, no need of any authentication
+                // "create" will be accessible directly, no need of any authentication
                 .antMatchers( "/v1/user").permitAll()
-                // it's indicate all request will be secure, actually for only one user, authenticated() is enough
-                .anyRequest().hasAuthority("USER");
+                // it's indicate all request in the url will be secure
+                // actually for there is only one user, authenticated() is enough
+                .antMatchers( "/v1/user/self").hasAuthority("USER");
         http.
                 csrf().disable()
                 // don't create session
