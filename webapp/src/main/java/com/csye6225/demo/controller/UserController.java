@@ -94,28 +94,24 @@ public class UserController {
         String first_name = userMap.get("first_name").toString();
         String last_name = userMap.get("last_name").toString();
             //password
-        if(!password.equals("") || !first_name.equals("") || !last_name.equals("")) {
-            if((!password.equals(""))){
+        if(password.equals("") || first_name.equals("") || last_name.equals("")) {
+            return new ResponseEntity<>("Type all content.", HttpStatus.BAD_REQUEST);
+        } else{
                 if (!isStrongPassword(password)) {
                     return new ResponseEntity<>("Need a strong password! Please try again!", HttpStatus.BAD_REQUEST);
                 } else {
                     String pw_hash = BCrypt.hashpw(password, BCrypt.gensalt());
                     user.setPassword(pw_hash);
                 }
-            }
-            //name
-            if (!userMap.get("first_name").equals("")) {
+                //name
                 user.setFirst_name(userMap.get("first_name").toString());
-            }
-            if (!userMap.get("last_name").equals("")) {
                 user.setLast_name(userMap.get("last_name").toString());
-            }
-            //time
-            user.setAccount_updated(getDatetime());
+                //time
+                user.setAccount_updated(getDatetime());
+                userRepository.save(user);
+                String newUserJSON = mapper.writeValueAsString(user);
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        userRepository.save(user);
-        String newUserJSON = mapper.writeValueAsString(user);
-        return new ResponseEntity<>(newUserJSON, HttpStatus.OK);
     }
 
     @RequestMapping(path = "/v1/user/self", method = RequestMethod.GET)
