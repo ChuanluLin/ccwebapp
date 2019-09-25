@@ -1,6 +1,7 @@
 package com.csye6225.demo.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -40,6 +41,7 @@ public class User {
         this.id = id;
     }
 
+    @JsonProperty("email_address")
     public String getEmail() {
         return email;
     }

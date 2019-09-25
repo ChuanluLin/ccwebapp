@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 public class UserController {
@@ -25,7 +24,7 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-
+  
     @RequestMapping(path = "/v1/user", method = RequestMethod.POST)
     public ResponseEntity<String> create(@RequestBody String userJSON, HttpServletResponse response) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -40,7 +39,6 @@ public class UserController {
         String first_name = userMap.get("first_name").toString();
         String last_name = userMap.get("last_name").toString();
         if (user_db != null) {
-//            response.sendError(HttpStatus.BAD_REQUEST.value(), "The email is exist!");
             return new ResponseEntity<>("The email exists! Please try again", HttpStatus.BAD_REQUEST);
         } else if(first_name == null || last_name == null){
             return new ResponseEntity<>("Name is empty!", HttpStatus.BAD_REQUEST);
