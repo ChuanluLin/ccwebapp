@@ -23,7 +23,6 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
-    //Test massage
   
     @RequestMapping(path = "/v1/user", method = RequestMethod.POST)
     public ResponseEntity<String> create(@RequestBody String userJSON, HttpServletResponse response) throws IOException {
