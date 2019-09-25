@@ -3,6 +3,7 @@ package com.csye6225.demo.controller;
 import com.csye6225.demo.pojo.User;
 import com.csye6225.demo.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jdk.jfr.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,8 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
   
-    @RequestMapping(path = "/v1/user", method = RequestMethod.POST)
+    @RequestMapping(path = "/v1/user", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+    @ResponseBody
     public ResponseEntity<String> create(@RequestBody String userJSON, HttpServletResponse response) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         HashMap userMap = mapper.readValue(userJSON, HashMap.class);
@@ -65,7 +67,8 @@ public class UserController {
         }
     }
 
-    @RequestMapping(path = "/v1/user/self", method = RequestMethod.PUT)
+    @RequestMapping(path = "/v1/user/self", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
+    @ResponseBody
     public ResponseEntity<String> update(@RequestBody String userJSON, HttpServletRequest request, HttpServletResponse response) throws IOException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByEmail(auth.getName());
@@ -95,7 +98,7 @@ public class UserController {
         }
     }
 
-    @RequestMapping(path = "/v1/user/self", method = RequestMethod.GET)
+    @RequestMapping(path = "/v1/user/self", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> GET(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
