@@ -25,11 +25,6 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-//    @ExceptionHandler({IllegalArgumentException.class, NullPointerException.class})
-//    public void illegalRegisterException(HttpServletResponse response) throws IOException {
-//        response.sendError(HttpStatus.BAD_REQUEST.value(),"The email is exist! Please try again!");
-//    }
-
 
     @RequestMapping(path = "/v1/user", method = RequestMethod.POST)
     public ResponseEntity<String> create(@RequestBody String userJSON, HttpServletResponse response) throws IOException {
@@ -42,9 +37,13 @@ public class UserController {
         String email = userMap.get("email_address").toString();
         User user_db = userRepository.findByEmail(email);
         String password = userMap.get("password").toString();
+        String first_name = userMap.get("first_name").toString();
+        String last_name = userMap.get("last_name").toString();
         if (user_db != null) {
 //            response.sendError(HttpStatus.BAD_REQUEST.value(), "The email is exist!");
             return new ResponseEntity<>("The email exists! Please try again", HttpStatus.BAD_REQUEST);
+        } else if(first_name == null || last_name == null){
+            return new ResponseEntity<>("Name is empty!", HttpStatus.BAD_REQUEST);
         } else if (!isEmail(email)) {
             return new ResponseEntity<>("Invalid email! Please try again!", HttpStatus.BAD_REQUEST);
         } else if (!isStrongPassword(password)) {
@@ -54,9 +53,9 @@ public class UserController {
             String pw_hash = BCrypt.hashpw(password, BCrypt.gensalt());
             newUser.setPassword(pw_hash);
 
-            newUser.setEmail(userMap.get("email_address").toString());
-            newUser.setFirst_name(userMap.get("first_name").toString());
-            newUser.setLast_name(userMap.get("last_name").toString());
+            newUser.setEmail(email);
+            newUser.setFirst_name(first_name);
+            newUser.setLast_name(last_name);
 
             //time
             newUser.setAccount_created(getDatetime());
@@ -67,21 +66,6 @@ public class UserController {
 
             return new ResponseEntity<>(newUserJSON, HttpStatus.CREATED);
         }
-    }
-
-    public String getDatetime() {
-        Date currentTime = new Date();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        String dateString = format.format(currentTime);
-        return dateString;
-    }
-
-    public boolean isEmail(String email) {
-        return email.matches("[a-zA-Z0-9_]+@[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)+");
-    }
-
-    public boolean isStrongPassword(String password) {
-        return password.matches("^(?=.*\\d)(?=.*[a-zA-Z])(?=.*[\\W])[\\da-zA-Z\\W]{8,}$");
     }
 
     @RequestMapping(path = "/v1/user/self", method = RequestMethod.PUT)
@@ -116,10 +100,30 @@ public class UserController {
 
     @RequestMapping(path = "/v1/user/self", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<User> GET(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ResponseEntity<String> GET(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByEmail(auth.getName());
-        return new ResponseEntity<User>(user,HttpStatus.OK) ;
+
+        ObjectMapper mapper = new ObjectMapper();
+        String userJSON = mapper.writeValueAsString(user);
+        return new ResponseEntity<>(userJSON,HttpStatus.OK) ;
+    }
+
+
+
+    public String getDatetime() {
+        Date currentTime = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        String dateString = format.format(currentTime);
+        return dateString;
+    }
+
+    public boolean isEmail(String email) {
+        return email.matches("[a-zA-Z0-9_]+@[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)+");
+    }
+
+    public boolean isStrongPassword(String password) {
+        return password.matches("^(?=.*\\d)(?=.*[a-zA-Z])(?=.*[\\W])[\\da-zA-Z\\W]{8,}$");
     }
 }
 
