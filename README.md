@@ -25,7 +25,7 @@ The following instructions will help you run this project on local environment.
  - Maven 3.2+
  - IntelliJ IDEA
  
-### Setup
+### Set up
 
 1. Import the web project in `webapp` folder straight into IDEA.
 
@@ -39,7 +39,7 @@ spring.datasource.password=root
 ```
 Then execute the following command in your MySQL:
 ```
-create database csye6225db;
+create database db_csye6225;
 ```
 
 ## Deploy Instructions
