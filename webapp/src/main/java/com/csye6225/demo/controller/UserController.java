@@ -41,7 +41,7 @@ public class UserController {
         String last_name = userMap.get("last_name").toString();
         if (user_db != null) {
             return new ResponseEntity<>("The email exists! Please try again", HttpStatus.BAD_REQUEST);
-        } else if(first_name == null || last_name == null){
+        } else if(first_name.equals("") || last_name.equals("")){
             return new ResponseEntity<>("Name is empty!", HttpStatus.BAD_REQUEST);
         } else if (!isEmail(email)) {
             return new ResponseEntity<>("Invalid email! Please try again!", HttpStatus.BAD_REQUEST);
