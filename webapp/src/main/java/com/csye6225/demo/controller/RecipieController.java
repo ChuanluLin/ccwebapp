@@ -44,16 +44,18 @@ public class RecipieController {
         newRecipie.setAuthor_id(userid);
         int cook_time_in_min = (int) recipieObj.getInt("cook_time_in_min");
         int prep_time_in_min = (int) recipieObj.getInt("prep_time_in_min");
+        //cook time multiple of 5
         if(!(cook_time_in_min % 5 == 0) || !(prep_time_in_min % 5 == 0) ){
             return new ResponseEntity<>("Cook or prep time should multiple of 5!", HttpStatus.BAD_REQUEST);
         }
         String title = recipieObj.getString("title");
         String cusine = recipieObj.getString("cusine");
         int servings = recipieObj.getInt("servings");
+        // 1 <= servings <=5
         if(!(servings >= 1 && servings <= 5)){
             return new ResponseEntity<>("Servings should be from 1 to 5!", HttpStatus.BAD_REQUEST);
         }
-        //Ingredients
+        //Ingredients: Set, avoid saving duplicate items
         Set<String> ingredients = new HashSet<String>();
         JSONArray ingArray  = recipieObj.getJSONArray("ingredients");
         int len = ingArray.length();
@@ -113,6 +115,14 @@ public class RecipieController {
         if(newRecipie == null){
             return new ResponseEntity<>("Not Found", HttpStatus.NOT_FOUND);
         }
+
+        String authorId = newRecipie.getAuthor_id();
+        User user = userRepository.findByEmail(auth.getName());
+        String userId = user.getId();
+        if(!userId.equals(authorId)){
+            return new ResponseEntity<>("Cannot change other's recipe.", HttpStatus.UNAUTHORIZED);
+        }
+
         JSONObject recipieObj = new JSONObject(recipieJSON);
         int cook_time_in_min = (int) recipieObj.getInt("cook_time_in_min");
         int prep_time_in_min = (int) recipieObj.getInt("prep_time_in_min");
@@ -181,9 +191,18 @@ public class RecipieController {
     public ResponseEntity<String> recipieDelete(@PathVariable("id") String id, HttpServletResponse response) throws IOException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Recipie recipie = recipieRepository.findById(id);
+
         if(recipie == null){
-            return new ResponseEntity<>("Not Found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Recipe Not Found", HttpStatus.NOT_FOUND);
         }
+
+        String authorId = recipie.getAuthor_id();
+        User user = userRepository.findByEmail(auth.getName());
+        String userId = user.getId();
+        if(!userId.equals(authorId)){
+            return new ResponseEntity<>("Cannot delete other's recipe.", HttpStatus.UNAUTHORIZED);
+        }
+
         recipieRepository.delete(recipie);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
