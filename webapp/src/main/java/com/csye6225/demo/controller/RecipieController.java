@@ -115,6 +115,14 @@ public class RecipieController {
         if(newRecipie == null){
             return new ResponseEntity<>("Not Found", HttpStatus.NOT_FOUND);
         }
+
+        String authorId = newRecipie.getAuthor_id();
+        User user = userRepository.findByEmail(auth.getName());
+        String userId = user.getId();
+        if(!userId.equals(authorId)){
+            return new ResponseEntity<>("Cannot change other's recipe.", HttpStatus.UNAUTHORIZED);
+        }
+
         JSONObject recipieObj = new JSONObject(recipieJSON);
         int cook_time_in_min = (int) recipieObj.getInt("cook_time_in_min");
         int prep_time_in_min = (int) recipieObj.getInt("prep_time_in_min");
