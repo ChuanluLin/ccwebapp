@@ -1,5 +1,7 @@
 package com.csye6225.demo.pojo;
 import javax.persistence.Embeddable;
+import javax.persistence.Entity;
+import javax.validation.constraints.Min;
 
 @Embeddable
 public class OrderedList {
