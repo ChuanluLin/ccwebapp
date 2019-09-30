@@ -4,12 +4,14 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 @Configuration
 @EnableWebSecurity
@@ -40,7 +42,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // it's indicate all request in the url will be secure
                 // actually for there is only one user, authenticated() is enough
                 .antMatchers( "/v1/user/self").hasAuthority("USER")
-                .antMatchers( "/v1/recipie/").hasAuthority("USER");
+                .antMatchers( "/v1/recipie/").hasAuthority("USER")
+                .antMatchers( HttpMethod.DELETE,"/v1/recipie/{id}").hasAuthority("USER")
+                .antMatchers( HttpMethod.PUT,"/v1/recipie/{id}").hasAuthority("USER");
         http.
                 csrf().disable()
                 // don't create session
