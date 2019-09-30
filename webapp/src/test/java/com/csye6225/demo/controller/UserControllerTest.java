@@ -38,10 +38,10 @@ public class UserControllerTest {
         // generate input JSON
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, String> createJsonMap = new HashMap<>();
-        createJsonMap.put("email_address", "test_create@email.com");
-        createJsonMap.put("password", "Qw1!As2@");
-        createJsonMap.put("first_name", "John");
-        createJsonMap.put("last_name", "Doe");
+        createJsonMap.put("email_address", "test@email.com");
+        createJsonMap.put("password", "123abcD@");
+        createJsonMap.put("first_name", "Chuanlu");
+        createJsonMap.put("last_name", "Lin");
         String json = objectMapper.writeValueAsString(createJsonMap);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/v1/user")
