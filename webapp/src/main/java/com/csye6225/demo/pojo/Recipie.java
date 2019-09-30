@@ -1,7 +1,9 @@
 package com.csye6225.demo.pojo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.http.StreamingHttpOutputMessage;
 
 import javax.persistence.*;
@@ -43,13 +45,14 @@ public class Recipie {
     @Column(name = "cusine", nullable = false)
     private String cusine;
 
+//    @Range(min = 1, max = 5, message = "Range should between 1 and 5.")
     @Column(name = "servings", nullable = false)
     private int servings;
 
     @ElementCollection(fetch=FetchType.LAZY, //加载策略
             targetClass=String.class) //指定元素中集合的类型
    // @CollectionTable(name="ingredients")
-    @Column(name = "ingredients", nullable = false)
+    @Column(name = "ingredients", nullable = false, unique = true)
     private Set<String> ingredients = new HashSet<String>();
 
     @ElementCollection(fetch=FetchType.LAZY, //加载策略
