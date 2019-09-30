@@ -1,15 +1,7 @@
 package com.csye6225.demo.controller;
-
-import com.csye6225.demo.pojo.NutritionInformation;
-import com.csye6225.demo.pojo.OrderedList;
-import com.csye6225.demo.pojo.Recipie;
 import com.csye6225.demo.pojo.User;
-import com.csye6225.demo.repository.RecipieRepository;
 import com.csye6225.demo.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -130,8 +122,6 @@ public class UserController {
     public boolean isStrongPassword(String password) {
         return password.matches("^(?=.*\\d)(?=.*[a-zA-Z])(?=.*[\\W])[\\da-zA-Z\\W]{8,}$");
     }
-
-
 }
 
 
