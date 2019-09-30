@@ -39,7 +39,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers( "/v1/user").permitAll()
                 // it's indicate all request in the url will be secure
                 // actually for there is only one user, authenticated() is enough
-                .antMatchers( "/v1/user/self").hasAuthority("USER");
+                .antMatchers( "/v1/user/self").hasAuthority("USER")
+                .antMatchers( "/v1/recipie/").hasAuthority("USER");
         http.
                 csrf().disable()
                 // don't create session
