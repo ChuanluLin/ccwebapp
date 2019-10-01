@@ -70,9 +70,9 @@ public class UserController {
         User user = userRepository.findByEmail(auth.getName());
         ObjectMapper mapper = new ObjectMapper();
         HashMap userMap = mapper.readValue(userJSON, HashMap.class);
-        if (userMap.containsKey("email_address") | userMap.containsKey("account_created") | userMap.containsKey("account_updated")) {
-            return new ResponseEntity<>("Could not change some information.", HttpStatus.BAD_REQUEST);
-        }
+//        if (userMap.containsKey("email_address") | userMap.containsKey("account_created") | userMap.containsKey("account_updated")) {
+//            return new ResponseEntity<>("Could not change some information.", HttpStatus.BAD_REQUEST);
+//        }
         String password = userMap.get("password").toString();
         String first_name = userMap.get("first_name").toString();
         String last_name = userMap.get("last_name").toString();
