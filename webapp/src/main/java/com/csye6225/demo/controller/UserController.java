@@ -1,4 +1,5 @@
 package com.csye6225.demo.controller;
+import com.csye6225.demo.exception.DataValidationException;
 import com.csye6225.demo.pojo.User;
 import com.csye6225.demo.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,13 +37,17 @@ public class UserController {
         String first_name = userMap.get("first_name").toString();
         String last_name = userMap.get("last_name").toString();
         if (user_db != null) {
-            return new ResponseEntity<>("The email exists! Please try again", HttpStatus.BAD_REQUEST);
+//            return new ResponseEntity<>("The email exists! Please try again", HttpStatus.BAD_REQUEST);
+            throw new DataValidationException(getDatetime(), 400, "Bad Request", "The email exists! Please try again", "/v1/user");
         } else if(first_name.equals("") || last_name.equals("")){
-            return new ResponseEntity<>("Name is empty!", HttpStatus.BAD_REQUEST);
+//            return new ResponseEntity<>("Name is empty!", HttpStatus.BAD_REQUEST);
+            throw new DataValidationException(getDatetime(), 400, "Bad Request", "Name is empty!", "/v1/user");
         } else if (!isEmail(email)) {
-            return new ResponseEntity<>("Invalid email! Please try again!", HttpStatus.BAD_REQUEST);
+//            return new ResponseEntity<>("Invalid email! Please try again!", HttpStatus.BAD_REQUEST);
+            throw new DataValidationException(getDatetime(), 400, "Bad Request", "Invalid email! Please try again!", "/v1/user");
         } else if (!isStrongPassword(password)) {
-            return new ResponseEntity<>("Need a strong password! Please try again!", HttpStatus.BAD_REQUEST);
+//            return new ResponseEntity<>("Need a strong password! Please try again!", HttpStatus.BAD_REQUEST);
+            throw new DataValidationException(getDatetime(), 400, "Bad Request", "Need a strong password! Please try again!", "/v1/user");
         } else {
             //password
             String pw_hash = BCrypt.hashpw(password, BCrypt.gensalt());
@@ -78,10 +83,12 @@ public class UserController {
         String last_name = userMap.get("last_name").toString();
             //password
         if(password.equals("") || first_name.equals("") || last_name.equals("")) {
-            return new ResponseEntity<>("Type all content.", HttpStatus.BAD_REQUEST);
+//            return new ResponseEntity<>("Type all content.", HttpStatus.BAD_REQUEST);
+            throw new DataValidationException(getDatetime(), 400, "Bad Request", "Type all content.", "/v1/user/self");
         } else{
                 if (!isStrongPassword(password)) {
-                    return new ResponseEntity<>("Need a strong password! Please try again!", HttpStatus.BAD_REQUEST);
+//                    return new ResponseEntity<>("Need a strong password! Please try again!", HttpStatus.BAD_REQUEST);
+                    throw new DataValidationException(getDatetime(), 400, "Bad Request", "Need a strong password! Please try again!", "/v1/user/self");
                 } else {
                     String pw_hash = BCrypt.hashpw(password, BCrypt.gensalt());
                     user.setPassword(pw_hash);
