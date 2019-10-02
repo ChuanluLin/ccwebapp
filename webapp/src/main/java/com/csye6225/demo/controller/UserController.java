@@ -38,16 +38,16 @@ public class UserController {
         String last_name = userMap.get("last_name").toString();
         if (user_db != null) {
 //            return new ResponseEntity<>("The email exists! Please try again", HttpStatus.BAD_REQUEST);
-            throw new DataValidationException(getDatetime(), 400, "Bad Request", "The email exists! Please try again", "/v1/user");
+            throw new DataValidationException(getDatetime(), 400, "Bad Request", "The email exists! Please try again");
         } else if(first_name.equals("") || last_name.equals("")){
 //            return new ResponseEntity<>("Name is empty!", HttpStatus.BAD_REQUEST);
-            throw new DataValidationException(getDatetime(), 400, "Bad Request", "Name is empty!", "/v1/user");
+            throw new DataValidationException(getDatetime(), 400, "Bad Request", "Name is empty!");
         } else if (!isEmail(email)) {
 //            return new ResponseEntity<>("Invalid email! Please try again!", HttpStatus.BAD_REQUEST);
-            throw new DataValidationException(getDatetime(), 400, "Bad Request", "Invalid email! Please try again!", "/v1/user");
+            throw new DataValidationException(getDatetime(), 400, "Bad Request", "Invalid email! Please try again!");
         } else if (!isStrongPassword(password)) {
 //            return new ResponseEntity<>("Need a strong password! Please try again!", HttpStatus.BAD_REQUEST);
-            throw new DataValidationException(getDatetime(), 400, "Bad Request", "Need a strong password! Please try again!", "/v1/user");
+            throw new DataValidationException(getDatetime(), 400, "Bad Request", "Need a strong password! Please try again!");
         } else {
             //password
             String pw_hash = BCrypt.hashpw(password, BCrypt.gensalt());
@@ -81,26 +81,26 @@ public class UserController {
         String password = userMap.get("password").toString();
         String first_name = userMap.get("first_name").toString();
         String last_name = userMap.get("last_name").toString();
-            //password
+        //password
         if(password.equals("") || first_name.equals("") || last_name.equals("")) {
 //            return new ResponseEntity<>("Type all content.", HttpStatus.BAD_REQUEST);
-            throw new DataValidationException(getDatetime(), 400, "Bad Request", "Type all content.", "/v1/user/self");
+            throw new DataValidationException(getDatetime(), 400, "Bad Request", "Type all content.");
         } else{
-                if (!isStrongPassword(password)) {
+            if (!isStrongPassword(password)) {
 //                    return new ResponseEntity<>("Need a strong password! Please try again!", HttpStatus.BAD_REQUEST);
-                    throw new DataValidationException(getDatetime(), 400, "Bad Request", "Need a strong password! Please try again!", "/v1/user/self");
-                } else {
-                    String pw_hash = BCrypt.hashpw(password, BCrypt.gensalt());
-                    user.setPassword(pw_hash);
-                }
-                //name
-                user.setFirst_name(userMap.get("first_name").toString());
-                user.setLast_name(userMap.get("last_name").toString());
-                //time
-                user.setAccount_updated(getDatetime());
-                userRepository.save(user);
-                String newUserJSON = mapper.writeValueAsString(user);
-                return new ResponseEntity<>(newUserJSON, HttpStatus.OK);
+                throw new DataValidationException(getDatetime(), 400, "Bad Request", "Need a strong password! Please try again!");
+            } else {
+                String pw_hash = BCrypt.hashpw(password, BCrypt.gensalt());
+                user.setPassword(pw_hash);
+            }
+            //name
+            user.setFirst_name(userMap.get("first_name").toString());
+            user.setLast_name(userMap.get("last_name").toString());
+            //time
+            user.setAccount_updated(getDatetime());
+            userRepository.save(user);
+            String newUserJSON = mapper.writeValueAsString(user);
+            return new ResponseEntity<>(newUserJSON, HttpStatus.OK);
         }
     }
 

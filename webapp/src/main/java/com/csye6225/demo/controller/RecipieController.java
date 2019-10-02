@@ -46,7 +46,7 @@ public class RecipieController {
         //cook time multiple of 5
         if(!(cook_time_in_min % 5 == 0) || !(prep_time_in_min % 5 == 0) ){
 //            return new ResponseEntity<>("Cook or prep time should multiple of 5!", HttpStatus.BAD_REQUEST);
-            throw new DataValidationException(getDatetime(), 400, "Bad Request", "Cook or prep time should multiple of 5!", "/v1/recipie/");
+            throw new DataValidationException(getDatetime(), 400, "Bad Request", "Cook or prep time should multiple of 5!");
         }
         String title = recipieObj.getString("title");
         String cusine = recipieObj.getString("cusine");
@@ -54,7 +54,7 @@ public class RecipieController {
         // 1 <= servings <=5
         if(!(servings >= 1 && servings <= 5)){
 //            return new ResponseEntity<>("Servings should be from 1 to 5!", HttpStatus.BAD_REQUEST);
-            throw new DataValidationException(getDatetime(), 400, "Bad Request", "Servings should be from 1 to 5!", "/v1/recipie/");
+            throw new DataValidationException(getDatetime(), 400, "Bad Request", "Servings should be from 1 to 5!");
         }
         //Ingredients: Set, avoid saving duplicate items
         Set<String> ingredients = new HashSet<String>();
@@ -70,7 +70,7 @@ public class RecipieController {
             int position = recipieObj.getJSONArray("steps").getJSONObject(i).getInt("position");
             if (position < 1) {
 //                return new ResponseEntity<>("Position no less than 1!", HttpStatus.BAD_REQUEST);
-                throw new DataValidationException(getDatetime(), 400, "Bad Request", "Position cannot be less than 1!", "/v1/recipie/");
+                throw new DataValidationException(getDatetime(), 400, "Bad Request", "Position cannot be less than 1!");
             }
             String items = recipieObj.getJSONArray("steps").getJSONObject(i).getString("items");
             OrderedList order = new OrderedList();
@@ -116,7 +116,7 @@ public class RecipieController {
         Recipie newRecipie = recipieRepository.findById(id);
         if(newRecipie == null){
 //            return new ResponseEntity<>("Not Found", HttpStatus.NOT_FOUND);
-            throw new DataValidationException(getDatetime(), 404, "Not Found", "Recipe Not Found", "/v1/recipie/"+id);
+            throw new DataValidationException(getDatetime(), 404, "Not Found", "Recipe Not Found");
         }
 
         String authorId = newRecipie.getAuthor_id();
@@ -124,7 +124,7 @@ public class RecipieController {
         String userId = user.getId();
         if(!userId.equals(authorId)){
 //            return new ResponseEntity<>("Cannot change other's recipe.", HttpStatus.UNAUTHORIZED);
-            throw new DataValidationException(getDatetime(), 401, "Unauthorized", "Cannot change other's recipe.", "/v1/recipie/"+id);
+            throw new DataValidationException(getDatetime(), 401, "Unauthorized", "Cannot change other's recipe.");
         }
 
         JSONObject recipieObj = new JSONObject(recipieJSON);
@@ -132,14 +132,14 @@ public class RecipieController {
         int prep_time_in_min = (int) recipieObj.getInt("prep_time_in_min");
         if(!(cook_time_in_min % 5 == 0) || !(prep_time_in_min % 5 == 0) ){
 //            return new ResponseEntity<>("Cook or prep time should multiple of 5!", HttpStatus.BAD_REQUEST);
-            throw new DataValidationException(getDatetime(), 400, "Bad Request", "Cook or prep time should multiple of 5!", "/v1/recipie/"+id);
+            throw new DataValidationException(getDatetime(), 400, "Bad Request", "Cook or prep time should multiple of 5!");
         }
         String title = recipieObj.getString("title");
         String cusine = recipieObj.getString("cusine");
         int servings = recipieObj.getInt("servings");
         if(!(servings >= 1 && servings <= 5)){
 //            return new ResponseEntity<>("Servings should be from 1 to 5!", HttpStatus.BAD_REQUEST);
-            throw new DataValidationException(getDatetime(), 400, "Bad Request", "Servings should be from 1 to 5!", "/v1/recipie/"+id);
+            throw new DataValidationException(getDatetime(), 400, "Bad Request", "Servings should be from 1 to 5!");
         }
         //Ingredients
         Set<String> ingredients = new HashSet<String>();
@@ -155,7 +155,7 @@ public class RecipieController {
             int position = recipieObj.getJSONArray("steps").getJSONObject(i).getInt("position");
             if (position < 1) {
 //                return new ResponseEntity<>("Position no less than 1!", HttpStatus.BAD_REQUEST);
-                throw new DataValidationException(getDatetime(), 400, "Bad Request", "Position no less than 1!", "/v1/recipie/"+id);
+                throw new DataValidationException(getDatetime(), 400, "Bad Request", "Position no less than 1!");
             }
             String items = recipieObj.getJSONArray("steps").getJSONObject(i).getString("items");
             OrderedList order = new OrderedList();
@@ -201,7 +201,7 @@ public class RecipieController {
 
         if(recipie == null){
 //            return new ResponseEntity<>("Recipe Not Found", HttpStatus.NOT_FOUND);
-            throw new DataValidationException(getDatetime(), 404, "Not Found", "Recipe Not Found", "/v1/recipie/"+id);
+            throw new DataValidationException(getDatetime(), 404, "Not Found", "Recipe Not Found");
         }
 
         String authorId = recipie.getAuthor_id();
@@ -209,7 +209,7 @@ public class RecipieController {
         String userId = user.getId();
         if(!userId.equals(authorId)){
 //            return new ResponseEntity<>("Cannot delete other's recipe.", HttpStatus.UNAUTHORIZED);
-            throw new DataValidationException(getDatetime(), 401, "Unauthorized", "Cannot delete other's recipe.", "/v1/recipie/"+id);
+            throw new DataValidationException(getDatetime(), 401, "Unauthorized", "Cannot delete other's recipe.");
         }
 
         recipieRepository.delete(recipie);
@@ -222,7 +222,7 @@ public class RecipieController {
         Recipie recipie = recipieRepository.findById(id);
         if(recipie == null){
 //            return new ResponseEntity<>("Not Found", HttpStatus.NOT_FOUND);
-            throw new DataValidationException(getDatetime(), 404, "Not Found", "Recipe Not Found", "/v1/recipie/"+id);
+            throw new DataValidationException(getDatetime(), 404, "Not Found", "Recipe Not Found");
         }
         ObjectMapper mapper = new ObjectMapper();
         String userJSON = mapper.writeValueAsString(recipie);
