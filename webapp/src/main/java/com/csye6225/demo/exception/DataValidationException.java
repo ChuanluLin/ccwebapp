@@ -7,12 +7,11 @@ public class DataValidationException extends RuntimeException {
     private String message;
     private String path;
 
-    public DataValidationException(String timestamp, int status, String error, String message, String path) {
+    public DataValidationException(String timestamp, int status, String error, String message) {
         this.timestamp = timestamp;
         this.status = status;
         this.error = error;
         this.message = message;
-        this.path = path;
     }
 
     public String getTimestamp() {

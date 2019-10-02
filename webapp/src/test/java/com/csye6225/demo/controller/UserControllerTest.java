@@ -1,5 +1,7 @@
 package com.csye6225.demo.controller;
 
+import com.csye6225.demo.pojo.User;
+import com.csye6225.demo.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,12 +28,25 @@ import java.util.Map;
 public class UserControllerTest {
     @Autowired
     private WebApplicationContext wac;
+    @Autowired
+    private UserRepository userRepository;
 
     private MockMvc mockMvc;
+    private static boolean initialized = false;
 
     @Before
     public void setUp (){
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+
+        if (!initialized) {
+            // remove potential User in database
+            User user = userRepository.findByEmail("test@email.com");
+            if (user != null) {
+                userRepository.delete(user);
+            }
+            // finish initialization
+            initialized = true;
+        }
     }
 
     @Test
