@@ -54,7 +54,7 @@ public class Recipie {
     @ElementCollection(fetch=FetchType.LAZY,
             targetClass=String.class)
    // @CollectionTable(name="ingredients")
-    @Column(name = "ingredients", nullable = false, unique = true)
+    @Column(name = "ingredients", nullable = false)
     private Set<String> ingredients = new HashSet<String>();
 
     @ElementCollection(fetch=FetchType.LAZY,
