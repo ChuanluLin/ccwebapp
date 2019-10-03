@@ -51,16 +51,16 @@ public class Recipie {
     @Column(name = "servings", nullable = false)
     private int servings;
 
-    @ElementCollection(fetch=FetchType.LAZY, //加载策略
-            targetClass=String.class) //指定元素中集合的类型
+    @ElementCollection(fetch=FetchType.LAZY,
+            targetClass=String.class)
    // @CollectionTable(name="ingredients")
     @Column(name = "ingredients", nullable = false, unique = true)
     private Set<String> ingredients = new HashSet<String>();
 
-    @ElementCollection(fetch=FetchType.LAZY, //加载策略
-            targetClass=OrderedList.class) //指定元素中集合的类型
-    @CollectionTable(name="orderedlist") //指定集合生成的表
-    @OrderColumn(name="steps", nullable = false) //指定排序列的名称
+    @ElementCollection(fetch=FetchType.LAZY,
+            targetClass=OrderedList.class)
+    @CollectionTable(name="orderedlist")
+    @OrderColumn(name="steps", nullable = false)
     private List<OrderedList> steps = new ArrayList<OrderedList>();
 
     @Column(name = "nutrition_information", nullable = false)
