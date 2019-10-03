@@ -24,6 +24,8 @@ public class UserRepositoryTest {
         User user_create = new User();
         user_create.setEmail(email);
         user_create.setFirst_name(first_name);
+        user_create.setLast_name("Doe");
+        user_create.setPassword("Qwer123!");
         userRepository.save(user_create);
 
         User user_query = userRepository.findByEmail(email);
