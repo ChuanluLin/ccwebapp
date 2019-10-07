@@ -4,14 +4,14 @@
       "Type" : "AWS::EC2::VPC",
       "Properties" : {
         "CidrBlock" : "10.0.0.0/16",
-        "Tags" : [ {"Key" : "Name", "Value" : {"Ref" : "AWS::StackName"} }]
+        "Tags" : [ {"Key" : "Name", "Value" : {"Fn::Sub" : "${AWS::StackName}-csye6225-vpc"} }]
       }
     },
 
     "InternetGateway" : {
       "Type" : "AWS::EC2::InternetGateway",
       "Properties" : {
-        "Tags" : [ {"Key" : "Name", "Value" : {"Ref" : "AWS::StackName"}}]
+        "Tags" : [ {"Key" : "Name", "Value" : {"Fn::Sub" : "${AWS::StackName}-csye6225-InternetGateway"}}]
       }
     },
 
@@ -27,7 +27,7 @@
       "Type" : "AWS::EC2::RouteTable",
       "Properties" : {
         "VpcId" : {"Ref" : "VPC"},
-        "Tags" : [ {"Key" : "Name", "Value" : {"Ref" : "AWS::StackName"}} ]
+        "Tags" : [ {"Key" : "Name", "Value" : {"Fn::Sub" : "${AWS::StackName}-csye6225-public-route-table"}} ]
       }
     },
 
@@ -46,8 +46,15 @@
             "VpcId" : { "Ref" : "VPC" },
             "MapPublicIpOnLaunch" : "true",
             "CidrBlock" : "10.0.1.0/24",
-            "AvailabilityZone" : "us-east-1a",
-            "Tags" : [ { "Key" : "Name", "Value" : "pub_subnet" } ]
+            "AvailabilityZone" : {
+            	"Fn::Select" : [
+            		"0",
+            		{
+            		"Fn::GetAZs" : ""
+            		}
+            	]
+            },
+            "Tags" : [ { "Key" : "Name", "Value" : {"Fn::Sub" : "${AWS::StackName}-SubnetA"} } ]
          }
     },
     "pubSubnetForRouteTableAssociation" : {
@@ -63,8 +70,15 @@
             "VpcId" : { "Ref" : "VPC" },
             "MapPublicIpOnLaunch" : "true",
             "CidrBlock" : "10.0.2.0/24",
-            "AvailabilityZone" :"us-east-1b",
-            "Tags" : [ { "Key" : "Name", "Value" : "pub_subnet1" } ]
+            "AvailabilityZone" :{
+            	"Fn::Select" : [
+            		"1",
+            		{
+            		"Fn::GetAZs" : ""
+            		}
+            	]
+            },
+            "Tags" : [ { "Key" : "Name", "Value" : {"Fn::Sub" : "${AWS::StackName}-SubnetB"} } ]
          }
      },
     "pubSubnet1ForRouteTableAssociation" : {
@@ -80,8 +94,15 @@
             "VpcId" : { "Ref" : "VPC" },
             "MapPublicIpOnLaunch" : "true",
             "CidrBlock" : "10.0.3.0/24",
-            "AvailabilityZone" : "us-east-1c",
-            "Tags" : [ { "Key" : "Name", "Value" : "pub_subnet2" } ]
+            "AvailabilityZone" : {
+            	"Fn::Select" : [
+            		"2",
+            		{
+            		"Fn::GetAZs" : ""
+            		}
+            	]
+            },
+            "Tags" : [ { "Key" : "Name", "Value" : {"Fn::Sub" : "${AWS::StackName}-SubnetC"} } ]
          }
       },
     "pubSubnet2ForRouteTableAssociation" : {
