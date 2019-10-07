@@ -127,3 +127,7 @@ venv.bak/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
+
+# Terraform .tfstate files
+*.tfstate
+*.tfstate.*
