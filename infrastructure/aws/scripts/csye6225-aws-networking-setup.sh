@@ -29,7 +29,7 @@ VPC_ID=$(aws ec2 create-vpc \
   --cidr-block $VPC_CIDR \
   --query 'Vpc.{VpcId:VpcId}' \
   --output text)
-echo "  VPC ID '$VPC_ID' CREATED in '$AWS_REGION' region."
+echo "  VPC ID '$VPC_ID' CREATED in '$AWS_Region' region."
 
 # Add Name tag to VPC
 aws ec2 create-tags \
