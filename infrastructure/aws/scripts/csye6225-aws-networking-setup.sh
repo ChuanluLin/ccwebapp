@@ -28,9 +28,15 @@ SUBNET_PUBLIC_AZ2=$AWS_Region"c"
 SUBNET_PUBLIC_NAME2=$VPC_NAME"-Subnet3"
 CHECK_FREQUENCY=5
 
+IPV4REGEX="^((25[0-5]|2[0-4][0-9]|[01]?[0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?)(\/([0-9]|[1-2][0-9]|3[0-2]))$"
 
-
-
+if [[ "$VPC_CIDR" =~ $IPV4REGEX ]] && [[ "$SUBNET_PUBLIC_CIDR" =~ $IPV4REGEX ]] && [[ "$SUBNET_PUBLIC_CIDR1" =~ $IPV4REGEX ]] && [[ "$SUBNET_PUBLIC_CIDR2" =~ $IPV4REGEX ]]
+then 
+  echo "Start"
+else
+  echo "Invalid Input"
+  exit 0
+fi
 
 
 # VPC_NAME=$VPC_NAME"-vpc"

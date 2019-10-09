@@ -1,0 +1,6 @@
+availability_zones = "us-east-2b,us-east-2c,us-east-2d"
+aws_profile = "prod"
+aws_region = "us-east-2"
+subnet_cidr_blocks = "10.2.0.0/24,10.2.4.0/24,10.2.6.0/24"
+vpc_cidr_block = "10.2.0.0/16"
+vpc_name = "prod"
