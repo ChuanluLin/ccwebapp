@@ -7,21 +7,47 @@ echo "Enter profile name:"
 read Profile_Name
 export AWS_PROFILE=$Profile_Name
 
-VPC_NAME="csye6225-vpc"
-VPC_CIDR="10.0.0.0/16"
+
+# input format
+# ./csye6225-aws-networking-setup.sh dev2 10.0.0.0/16 10.0.1.0/24 10.0.2.0/24 10.0.3.0/24
+
+
+VPC_NAME=$1
+VPC_CIDR=$2
 AWS_Region=$(aws configure get region)
-IGW_NAME="csye6225-InternetGateway"
-ROUTE_TABLE_NAME="csye6225-public-route-table"
-SUBNET_PUBLIC_CIDR="10.0.1.0/24"
+IGW_NAME=$VPC_NAME"-InternetGateway"
+ROUTE_TABLE_NAME=$VPC_NAME"-public-route-table"
+SUBNET_PUBLIC_CIDR=$3
 SUBNET_PUBLIC_AZ=$AWS_Region"a"
-SUBNET_PUBLIC_NAME="10.0.1.0"
-SUBNET_PUBLIC_CIDR1="10.0.2.0/24"
+SUBNET_PUBLIC_NAME=$VPC_NAME"-Subnet1"
+SUBNET_PUBLIC_CIDR1=$4
 SUBNET_PUBLIC_AZ1=$AWS_Region"b"
-SUBNET_PUBLIC_NAME1="10.0.2.0"
-SUBNET_PUBLIC_CIDR2="10.0.3.0/24"
+SUBNET_PUBLIC_NAME1=$VPC_NAME"-Subnet2"
+SUBNET_PUBLIC_CIDR2=$5
 SUBNET_PUBLIC_AZ2=$AWS_Region"c"
-SUBNET_PUBLIC_NAME2="10.0.3.0"
+SUBNET_PUBLIC_NAME2=$VPC_NAME"-Subnet3"
 CHECK_FREQUENCY=5
+
+
+
+
+
+
+# VPC_NAME=$VPC_NAME"-vpc"
+# VPC_CIDR="10.0.0.0/16"
+# AWS_Region=$(aws configure get region)
+# IGW_NAME=$VPC_NAME"-InternetGateway"
+# ROUTE_TABLE_NAME=$VPC_NAME"-public-route-table"
+# SUBNET_PUBLIC_CIDR="10.0.1.0/24"
+# SUBNET_PUBLIC_AZ=$AWS_Region"a"
+# SUBNET_PUBLIC_NAME="10.0.1.0"
+# SUBNET_PUBLIC_CIDR1="10.0.2.0/24"
+# SUBNET_PUBLIC_AZ1=$AWS_Region"b"
+# SUBNET_PUBLIC_NAME1="10.0.2.0"
+# SUBNET_PUBLIC_CIDR2="10.0.3.0/24"
+# SUBNET_PUBLIC_AZ2=$AWS_Region"c"
+# SUBNET_PUBLIC_NAME2="10.0.3.0"
+# CHECK_FREQUENCY=5
 
 # Create VPC
 echo "Creating VPC in preferred region..."
@@ -29,7 +55,7 @@ VPC_ID=$(aws ec2 create-vpc \
   --cidr-block $VPC_CIDR \
   --query 'Vpc.{VpcId:VpcId}' \
   --output text)
-echo "  VPC ID '$VPC_ID' CREATED in '$AWS_REGION' region."
+echo "  VPC ID '$VPC_ID' CREATED in '$AWS_Region' region."
 
 # Add Name tag to VPC
 aws ec2 create-tags \

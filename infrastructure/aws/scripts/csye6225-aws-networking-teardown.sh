@@ -6,16 +6,20 @@ set -e
 echo "Enter profile name:"
 read Profile_Name
 export AWS_PROFILE=$Profile_Name
+
+echo "Enter VPC name:"
+read VPC_NAME
+
 #Get a vpc-Id using the name provided
-vpcId=`aws ec2 describe-vpcs --filter "Name=tag:Name,Values=csye6225-vpc" --query 'Vpcs[*].{id:VpcId}' --output text`
+vpcId=`aws ec2 describe-vpcs --filter "Name=tag:Name,Values=$VPC_NAME" --query 'Vpcs[*].{id:VpcId}' --output text`
 #Get a Internet Gateway Id using the name provided
-gatewayId=`aws ec2 describe-internet-gateways --filter "Name=tag:Name,Values=csye6225-InternetGateway" --query 'InternetGateways[*].{id:InternetGatewayId}' --output text`
+gatewayId=`aws ec2 describe-internet-gateways --filter "Name=tag:Name,Values=$VPC_NAME-InternetGateway" --query 'InternetGateways[*].{id:InternetGatewayId}' --output text`
 #Get a route table Id using the name provided
-routeTableId=`aws ec2 describe-route-tables --filter "Name=tag:Name,Values=csye6225-public-route-table" --query 'RouteTables[*].{id:RouteTableId}' --output text`
+routeTableId=`aws ec2 describe-route-tables --filter "Name=tag:Name,Values=$VPC_NAME-public-route-table" --query 'RouteTables[*].{id:RouteTableId}' --output text`
 #Get a Subnet Id using the name provided
-publicSubnetId=`aws ec2 describe-subnets --filter "Name=tag:Name,Values=10.0.1.0" --query 'Subnets[*].{id:SubnetId}' --output text`
-publicSubnetId1=`aws ec2 describe-subnets --filter "Name=tag:Name,Values=10.0.2.0" --query 'Subnets[*].{id:SubnetId}' --output text`
-publicSubnetId2=`aws ec2 describe-subnets --filter "Name=tag:Name,Values=10.0.3.0" --query 'Subnets[*].{id:SubnetId}' --output text`
+publicSubnetId=`aws ec2 describe-subnets --filter "Name=tag:Name,Values=$VPC_NAME-Subnet1" --query 'Subnets[*].{id:SubnetId}' --output text`
+publicSubnetId1=`aws ec2 describe-subnets --filter "Name=tag:Name,Values=$VPC_NAME-Subnet2" --query 'Subnets[*].{id:SubnetId}' --output text`
+publicSubnetId2=`aws ec2 describe-subnets --filter "Name=tag:Name,Values=$VPC_NAME-Subnet3" --query 'Subnets[*].{id:SubnetId}' --output text`
 
 #Delete all subnets from the vpc
 aws ec2 delete-subnet --subnet-id $publicSubnetId
