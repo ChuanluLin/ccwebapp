@@ -36,14 +36,18 @@ Make sure install Terraform before running scripts in this folder.
 
 Before running the script you should set all variables at files with suffix with \*.tfvars.
 You should set availability zones, aws profile, aws region, subnet cider blocks, vpc cidr block, vpc name.
-example: prodVars.tfvars
+example: devVars.tfvars
 ```
-availability_zones = "us-east-2b,us-east-2c,us-east-2d"
-aws_profile = "prod"
-aws_region = "us-east-2"
-subnet_cidr_blocks = "10.2.0.0/24,10.2.4.0/24,10.2.6.0/24"
+availability_zone1 = "us-east-1b"
+availability_zone2 = "us-east-1c"
+availability_zone3 = "us-east-1d"
+aws_profile = "dev"
+aws_region = "us-east-1"
+subnet1_cidr_block = "10.2.0.0/24"
+subnet2_cidr_block = "10.2.4.0/24"
+subnet3_cidr_block = "10.2.6.0/24"
 vpc_cidr_block = "10.2.0.0/16"
-vpc_name = "prod"
+vpc_name = "dev"
 
 ```
 
@@ -69,4 +73,4 @@ Run the below command to teardown network infrastructure, variables can be input
 terraform destroy
 terraform destroy -var-file=devVars.tfvars
 ```
-
+NOTE: If you want to create multiple VPCs, please copy csye6225-aws-networking.tf, devVars.tfvars, outputs.tf and variables.tf to another folder and run all scripts above again.
