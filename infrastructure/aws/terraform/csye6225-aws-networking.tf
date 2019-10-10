@@ -27,7 +27,7 @@ resource "aws_subnet" "public" {
   vpc_id = "${aws_vpc.default.id}"
 
   count                   = "${var.subnet_count}"
-  cidr_block              = "${element(list(var.subnet1_cidr_block, var.subnet2_cidr_block, var.subnet1_cidr_block), count.index)}"
+  cidr_block              = "${element(list(var.subnet1_cidr_block, var.subnet2_cidr_block, var.subnet3_cidr_block), count.index)}"
   availability_zone       = "${element(list(var.availability_zone1, var.availability_zone2, var.availability_zone3), count.index)}"
   # map_public_ip_on_launch = true
 
