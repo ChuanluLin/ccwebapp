@@ -3,7 +3,7 @@
     "VPC" : {
       "Type" : "AWS::EC2::VPC",
       "Properties" : {
-        "CidrBlock" : "10.0.0.0/16",
+        "CidrBlock" : {"Ref": "VPCCIDR"},
         "Tags" : [ {"Key" : "Name", "Value" : {"Fn::Sub" : "${AWS::StackName}-csye6225-vpc"} }]
       }
     },
@@ -45,14 +45,14 @@
          "Properties" : {
             "VpcId" : { "Ref" : "VPC" },
             "MapPublicIpOnLaunch" : "true",
-            "CidrBlock" : "10.0.1.0/24",
+            "CidrBlock" :  {"Ref": "SUBNETPUBLICCIDR"},
             "AvailabilityZone" : {
-            	"Fn::Select" : [
-            		"0",
-            		{
-            		"Fn::GetAZs" : ""
-            		}
-            	]
+                "Fn::Select" : [
+                    "0",
+                    {
+                    "Fn::GetAZs" : ""
+                    }
+                ]
             },
             "Tags" : [ { "Key" : "Name", "Value" : {"Fn::Sub" : "${AWS::StackName}-SubnetA"} } ]
          }
@@ -64,19 +64,19 @@
             "RouteTableId" : { "Ref" : "RouteTable" }
          }
     },
-	"PublicSubnet1" : {
+    "PublicSubnet1" : {
          "Type" : "AWS::EC2::Subnet",
          "Properties" : {
             "VpcId" : { "Ref" : "VPC" },
             "MapPublicIpOnLaunch" : "true",
-            "CidrBlock" : "10.0.2.0/24",
+            "CidrBlock" : {"Ref": "SUBNETPUBLICCIDR1"},
             "AvailabilityZone" :{
-            	"Fn::Select" : [
-            		"1",
-            		{
-            		"Fn::GetAZs" : ""
-            		}
-            	]
+                "Fn::Select" : [
+                    "1",
+                    {
+                    "Fn::GetAZs" : ""
+                    }
+                ]
             },
             "Tags" : [ { "Key" : "Name", "Value" : {"Fn::Sub" : "${AWS::StackName}-SubnetB"} } ]
          }
@@ -88,19 +88,19 @@
             "RouteTableId" : { "Ref" : "RouteTable" }
          }
       },
-	"PublicSubnet2" : {
+    "PublicSubnet2" : {
          "Type" : "AWS::EC2::Subnet",
          "Properties" : {
             "VpcId" : { "Ref" : "VPC" },
             "MapPublicIpOnLaunch" : "true",
-            "CidrBlock" : "10.0.3.0/24",
+            "CidrBlock" : {"Ref": "SUBNETPUBLICCIDR2"},
             "AvailabilityZone" : {
-            	"Fn::Select" : [
-            		"2",
-            		{
-            		"Fn::GetAZs" : ""
-            		}
-            	]
+                "Fn::Select" : [
+                    "2",
+                    {
+                    "Fn::GetAZs" : ""
+                    }
+                ]
             },
             "Tags" : [ { "Key" : "Name", "Value" : {"Fn::Sub" : "${AWS::StackName}-SubnetC"} } ]
          }
@@ -112,5 +112,28 @@
             "RouteTableId" : { "Ref" : "RouteTable" }
          }
       }
-	}
+    },
+    "Parameters":{
+        "VPCCIDR":{
+            "Description":"CidrBlock of VPC",
+            "Type": "String"
+        },
+        "SUBNETPUBLICCIDR":{
+            "Description":"CidrBlock of Subnet 1",
+            "Type": "String"
+        },
+        "SUBNETPUBLICCIDR1":{
+            "Description":"CidrBlock of Subnet 2",
+            "Type": "String"
+        },
+        "SUBNETPUBLICCIDR2":{
+            "Description":"CidrBlock of Subnet 3",
+            "Type": "String"
+        }
+      }
 }
+
+
+
+
+    
