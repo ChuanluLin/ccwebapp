@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name="recipie")
+@Table(name="recipe")
 @GenericGenerator(name = "jpa-uuid", strategy = "uuid")
-public class Recipie {
+public class Recipe {
     @Id
     @GeneratedValue(generator = "jpa-uuid")
     @Column(name="id", unique = true, nullable = false, length = 32)

@@ -3,9 +3,9 @@ package com.csye6225.demo.controller;
 import com.csye6225.demo.exception.DataValidationException;
 import com.csye6225.demo.pojo.NutritionInformation;
 import com.csye6225.demo.pojo.OrderedList;
-import com.csye6225.demo.pojo.Recipie;
+import com.csye6225.demo.pojo.Recipe;
 import com.csye6225.demo.pojo.User;
-import com.csye6225.demo.repository.RecipieRepository;
+import com.csye6225.demo.repository.RecipeRepository;
 import com.csye6225.demo.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
@@ -24,23 +24,23 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
-public class RecipieController {
+public class RecipeController {
     @Autowired
-    private RecipieRepository recipieRepository;
+    private RecipeRepository recipeRepository;
 
     @Autowired
     private UserRepository userRepository;
 
-    @PostMapping(path = "/v1/recipie/", consumes = "application/json", produces = "application/json")
+    @PostMapping(path = "/v1/recipe/", consumes = "application/json", produces = "application/json")
     @ResponseBody
-    public ResponseEntity<String> createRecipie(@RequestBody String recipieJSON, HttpServletResponse response) throws IOException, JSONException{
+    public ResponseEntity<String> createRecipe(@RequestBody String recipeJSON, HttpServletResponse response) throws IOException, JSONException{
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        JSONObject recipieObj = new JSONObject(recipieJSON);
-        Recipie newRecipie = new Recipie();
+        JSONObject recipeObj = new JSONObject(recipeJSON);
+        Recipe newRecipe = new Recipe();
 
         User user = userRepository.findByEmail(auth.getName());
         String userid = user.getId();
-        newRecipie.setAuthor_id(userid);
+        newRecipe.setAuthor_id(userid);
         int cook_time_in_min;
         int prep_time_in_min;
         int servings;
@@ -50,15 +50,15 @@ public class RecipieController {
         Number carbohydrates_in_grams;
         Number protein_in_grams;
         try{
-            cook_time_in_min = (int) recipieObj.getInt("cook_time_in_min");
-            prep_time_in_min = (int) recipieObj.getInt("prep_time_in_min");
-            servings = recipieObj.getInt("servings");
+            cook_time_in_min = (int) recipeObj.getInt("cook_time_in_min");
+            prep_time_in_min = (int) recipeObj.getInt("prep_time_in_min");
+            servings = recipeObj.getInt("servings");
             //Nutrition
-            calories = recipieObj.getJSONObject("nutrition_information").getInt("calories");
-            cholesterol_in_mg = recipieObj.getJSONObject("nutrition_information").getDouble("cholesterol_in_mg");
-            sodium_in_mg = recipieObj.getJSONObject("nutrition_information").getInt("sodium_in_mg");
-            carbohydrates_in_grams = recipieObj.getJSONObject("nutrition_information").getDouble("carbohydrates_in_grams");
-            protein_in_grams = recipieObj.getJSONObject("nutrition_information").getDouble("protein_in_grams");
+            calories = recipeObj.getJSONObject("nutrition_information").getInt("calories");
+            cholesterol_in_mg = recipeObj.getJSONObject("nutrition_information").getDouble("cholesterol_in_mg");
+            sodium_in_mg = recipeObj.getJSONObject("nutrition_information").getInt("sodium_in_mg");
+            carbohydrates_in_grams = recipeObj.getJSONObject("nutrition_information").getDouble("carbohydrates_in_grams");
+            protein_in_grams = recipeObj.getJSONObject("nutrition_information").getDouble("protein_in_grams");
         }catch(Exception e){
             throw new DataValidationException(getDatetime(), 400, "Bad Request", "Format error!");
         }
@@ -73,22 +73,22 @@ public class RecipieController {
             throw new DataValidationException(getDatetime(), 400, "Bad Request", "Servings should be from 1 to 5!");
         }
 
-        String title = recipieObj.getString("title");
-        String cusine = recipieObj.getString("cusine");
+        String title = recipeObj.getString("title");
+        String cusine = recipeObj.getString("cusine");
         //Ingredients: Set, avoid saving duplicate items
         Set<String> ingredients = new HashSet<String>();
-        JSONArray ingArray  = recipieObj.getJSONArray("ingredients");
+        JSONArray ingArray  = recipeObj.getJSONArray("ingredients");
         int len = ingArray.length();
         for(int i = 0; i < len; i++){
             ingredients.add(ingArray.getString(i));
         }
         //Steps
         List<OrderedList> steps = new ArrayList<OrderedList>();
-        int size = recipieObj.getJSONArray("steps").length();
+        int size = recipeObj.getJSONArray("steps").length();
         for (int i = 0; i < size; i++) {
             int position;
             try {
-                position = recipieObj.getJSONArray("steps").getJSONObject(i).getInt("position");
+                position = recipeObj.getJSONArray("steps").getJSONObject(i).getInt("position");
             }catch(Exception e){
                 throw new DataValidationException(getDatetime(), 400, "Bad Request", "Format error!");
             }
@@ -96,7 +96,7 @@ public class RecipieController {
 //                return new ResponseEntity<>("Position no less than 1!", HttpStatus.BAD_REQUEST);
                 throw new DataValidationException(getDatetime(), 400, "Bad Request", "Position cannot be less than 1!");
             }
-            String items = recipieObj.getJSONArray("steps").getJSONObject(i).getString("items");
+            String items = recipeObj.getJSONArray("steps").getJSONObject(i).getString("items");
             OrderedList order = new OrderedList();
             order.setPosition(position);
             order.setItems(items);
@@ -110,35 +110,35 @@ public class RecipieController {
         nutrition_information.setCarbohydrates_in_grams(carbohydrates_in_grams);
         nutrition_information.setProtein_in_grams(protein_in_grams);
 
-        newRecipie.setCook_time_in_min(cook_time_in_min);
-        newRecipie.setPrep_time_in_min(prep_time_in_min);
-        newRecipie.setTotal_time_in_min(cook_time_in_min+prep_time_in_min);
-        newRecipie.setTitle(title);
-        newRecipie.setCusine(cusine);
-        newRecipie.setIngredients(ingredients);
-        newRecipie.setServings(servings);
-        newRecipie.setSteps(steps);
-        newRecipie.setNutrition_information(nutrition_information);
-        newRecipie.setCreated_ts(getDatetime());
-        newRecipie.setUpdated_ts(getDatetime());
+        newRecipe.setCook_time_in_min(cook_time_in_min);
+        newRecipe.setPrep_time_in_min(prep_time_in_min);
+        newRecipe.setTotal_time_in_min(cook_time_in_min+prep_time_in_min);
+        newRecipe.setTitle(title);
+        newRecipe.setCusine(cusine);
+        newRecipe.setIngredients(ingredients);
+        newRecipe.setServings(servings);
+        newRecipe.setSteps(steps);
+        newRecipe.setNutrition_information(nutrition_information);
+        newRecipe.setCreated_ts(getDatetime());
+        newRecipe.setUpdated_ts(getDatetime());
 
-        recipieRepository.save(newRecipie);
+        recipeRepository.save(newRecipe);
         ObjectMapper mapper = new ObjectMapper();
-        String newRecipieJSON = mapper.writeValueAsString(newRecipie);
-        return new ResponseEntity<>(newRecipieJSON, HttpStatus.CREATED);
+        String newRecipeJSON = mapper.writeValueAsString(newRecipe);
+        return new ResponseEntity<>(newRecipeJSON, HttpStatus.CREATED);
     }
 
-    @PutMapping(path = "/v1/recipie/{id}", consumes = "application/json", produces = "application/json")
+    @PutMapping(path = "/v1/recipe/{id}", consumes = "application/json", produces = "application/json")
     @ResponseBody
-    public ResponseEntity<String> recipieUpdate(@PathVariable("id") String id, @RequestBody String recipieJSON, HttpServletResponse response) throws IOException, JSONException {
+    public ResponseEntity<String> recipeUpdate(@PathVariable("id") String id, @RequestBody String recipeJSON, HttpServletResponse response) throws IOException, JSONException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Recipie newRecipie = recipieRepository.findById(id);
-        if(newRecipie == null){
+        Recipe newRecipe = recipeRepository.findById(id);
+        if(newRecipe == null){
 //            return new ResponseEntity<>("Not Found", HttpStatus.NOT_FOUND);
             throw new DataValidationException(getDatetime(), 404, "Not Found", "Recipe Not Found");
         }
 
-        String authorId = newRecipie.getAuthor_id();
+        String authorId = newRecipe.getAuthor_id();
         User user = userRepository.findByEmail(auth.getName());
         String userId = user.getId();
         if(!userId.equals(authorId)){
@@ -146,7 +146,7 @@ public class RecipieController {
             throw new DataValidationException(getDatetime(), 401, "Unauthorized", "Cannot change other's recipe.");
         }
 
-        JSONObject recipieObj = new JSONObject(recipieJSON);
+        JSONObject recipeObj = new JSONObject(recipeJSON);
         int cook_time_in_min;
         int prep_time_in_min;
         int servings;
@@ -156,15 +156,15 @@ public class RecipieController {
         Number carbohydrates_in_grams;
         Number protein_in_grams;
         try{
-            cook_time_in_min = (int) recipieObj.getInt("cook_time_in_min");
-            prep_time_in_min = (int) recipieObj.getInt("prep_time_in_min");
-            servings = recipieObj.getInt("servings");
+            cook_time_in_min = (int) recipeObj.getInt("cook_time_in_min");
+            prep_time_in_min = (int) recipeObj.getInt("prep_time_in_min");
+            servings = recipeObj.getInt("servings");
             //Nutrition
-            calories = recipieObj.getJSONObject("nutrition_information").getInt("calories");
-            cholesterol_in_mg = recipieObj.getJSONObject("nutrition_information").getDouble("cholesterol_in_mg");
-            sodium_in_mg = recipieObj.getJSONObject("nutrition_information").getInt("sodium_in_mg");
-            carbohydrates_in_grams = recipieObj.getJSONObject("nutrition_information").getDouble("carbohydrates_in_grams");
-            protein_in_grams = recipieObj.getJSONObject("nutrition_information").getDouble("protein_in_grams");
+            calories = recipeObj.getJSONObject("nutrition_information").getInt("calories");
+            cholesterol_in_mg = recipeObj.getJSONObject("nutrition_information").getDouble("cholesterol_in_mg");
+            sodium_in_mg = recipeObj.getJSONObject("nutrition_information").getInt("sodium_in_mg");
+            carbohydrates_in_grams = recipeObj.getJSONObject("nutrition_information").getDouble("carbohydrates_in_grams");
+            protein_in_grams = recipeObj.getJSONObject("nutrition_information").getDouble("protein_in_grams");
         }catch(Exception e){
             throw new DataValidationException(getDatetime(), 400, "Bad Request", "Format error!");
         }
@@ -180,22 +180,22 @@ public class RecipieController {
             throw new DataValidationException(getDatetime(), 400, "Bad Request", "Servings should be from 1 to 5!");
         }
 
-        String title = recipieObj.getString("title");
-        String cusine = recipieObj.getString("cusine");
+        String title = recipeObj.getString("title");
+        String cusine = recipeObj.getString("cusine");
         //Ingredients: Set, avoid saving duplicate items
         Set<String> ingredients = new HashSet<String>();
-        JSONArray ingArray  = recipieObj.getJSONArray("ingredients");
+        JSONArray ingArray  = recipeObj.getJSONArray("ingredients");
         int len = ingArray.length();
         for(int i = 0; i < len; i++){
             ingredients.add(ingArray.getString(i));
         }
         //Steps
         List<OrderedList> steps = new ArrayList<OrderedList>();
-        int size = recipieObj.getJSONArray("steps").length();
+        int size = recipeObj.getJSONArray("steps").length();
         for (int i = 0; i < size; i++) {
             int position;
             try {
-                position = recipieObj.getJSONArray("steps").getJSONObject(i).getInt("position");
+                position = recipeObj.getJSONArray("steps").getJSONObject(i).getInt("position");
             }catch(Exception e){
                 throw new DataValidationException(getDatetime(), 400, "Bad Request", "Format error!");
             }
@@ -203,7 +203,7 @@ public class RecipieController {
 //                return new ResponseEntity<>("Position no less than 1!", HttpStatus.BAD_REQUEST);
                 throw new DataValidationException(getDatetime(), 400, "Bad Request", "Position cannot be less than 1!");
             }
-            String items = recipieObj.getJSONArray("steps").getJSONObject(i).getString("items");
+            String items = recipeObj.getJSONArray("steps").getJSONObject(i).getString("items");
             OrderedList order = new OrderedList();
             order.setPosition(position);
             order.setItems(items);
@@ -217,35 +217,35 @@ public class RecipieController {
         nutrition_information.setCarbohydrates_in_grams(carbohydrates_in_grams);
         nutrition_information.setProtein_in_grams(protein_in_grams);
 
-        newRecipie.setCook_time_in_min(cook_time_in_min);
-        newRecipie.setPrep_time_in_min(prep_time_in_min);
-        newRecipie.setTotal_time_in_min(cook_time_in_min+prep_time_in_min);
-        newRecipie.setTitle(title);
-        newRecipie.setCusine(cusine);
-        newRecipie.setIngredients(ingredients);
-        newRecipie.setServings(servings);
-        newRecipie.setSteps(steps);
-        newRecipie.setNutrition_information(nutrition_information);
-        newRecipie.setUpdated_ts(getDatetime());
+        newRecipe.setCook_time_in_min(cook_time_in_min);
+        newRecipe.setPrep_time_in_min(prep_time_in_min);
+        newRecipe.setTotal_time_in_min(cook_time_in_min+prep_time_in_min);
+        newRecipe.setTitle(title);
+        newRecipe.setCusine(cusine);
+        newRecipe.setIngredients(ingredients);
+        newRecipe.setServings(servings);
+        newRecipe.setSteps(steps);
+        newRecipe.setNutrition_information(nutrition_information);
+        newRecipe.setUpdated_ts(getDatetime());
 
-        recipieRepository.save(newRecipie);
+        recipeRepository.save(newRecipe);
         ObjectMapper mapper = new ObjectMapper();
-        String newRecipieJSON = mapper.writeValueAsString(newRecipie);
-        return new ResponseEntity<>(newRecipieJSON, HttpStatus.OK);
+        String newRecipeJSON = mapper.writeValueAsString(newRecipe);
+        return new ResponseEntity<>(newRecipeJSON, HttpStatus.OK);
     }
 
-    @DeleteMapping(path = "/v1/recipie/{id}", produces = "application/json")
+    @DeleteMapping(path = "/v1/recipe/{id}", produces = "application/json")
     @ResponseBody
-    public ResponseEntity<String> recipieDelete(@PathVariable("id") String id, HttpServletResponse response) throws IOException {
+    public ResponseEntity<String> recipeDelete(@PathVariable("id") String id, HttpServletResponse response) throws IOException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Recipie recipie = recipieRepository.findById(id);
+        Recipe recipe = recipeRepository.findById(id);
 
-        if(recipie == null){
+        if(recipe == null){
 //            return new ResponseEntity<>("Recipe Not Found", HttpStatus.NOT_FOUND);
             throw new DataValidationException(getDatetime(), 404, "Not Found", "Recipe Not Found");
         }
 
-        String authorId = recipie.getAuthor_id();
+        String authorId = recipe.getAuthor_id();
         User user = userRepository.findByEmail(auth.getName());
         String userId = user.getId();
         if(!userId.equals(authorId)){
@@ -253,20 +253,20 @@ public class RecipieController {
             throw new DataValidationException(getDatetime(), 401, "Unauthorized", "Cannot delete other's recipe.");
         }
 
-        recipieRepository.delete(recipie);
+        recipeRepository.delete(recipe);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping(path = "/v1/recipie/{id}", produces = "application/json")
+    @GetMapping(path = "/v1/recipe/{id}", produces = "application/json")
     @ResponseBody
-    public ResponseEntity<String> recipieGET(@PathVariable("id") String id) throws IOException {
-        Recipie recipie = recipieRepository.findById(id);
-        if(recipie == null){
+    public ResponseEntity<String> recipeGET(@PathVariable("id") String id) throws IOException {
+        Recipe recipe = recipeRepository.findById(id);
+        if(recipe == null){
 //            return new ResponseEntity<>("Not Found", HttpStatus.NOT_FOUND);
             throw new DataValidationException(getDatetime(), 404, "Not Found", "Recipe Not Found");
         }
         ObjectMapper mapper = new ObjectMapper();
-        String userJSON = mapper.writeValueAsString(recipie);
+        String userJSON = mapper.writeValueAsString(recipe);
         return new ResponseEntity<>(userJSON,HttpStatus.OK) ;
     }
 
