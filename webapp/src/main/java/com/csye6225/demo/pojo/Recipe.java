@@ -18,6 +18,9 @@ import java.util.Set;
 @Table(name="recipe")
 @GenericGenerator(name = "jpa-uuid", strategy = "uuid")
 public class Recipe {
+    @Column(name = "image", nullable = false)
+    private Image image;
+
     @Id
     @GeneratedValue(generator = "jpa-uuid")
     @Column(name="id", unique = true, nullable = false, length = 32)
@@ -168,5 +171,13 @@ public class Recipe {
 
     public void setNutrition_information(NutritionInformation nutrition_information) {
         this.nutrition_information = nutrition_information;
+    }
+
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
     }
 }

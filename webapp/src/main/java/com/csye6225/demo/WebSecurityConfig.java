@@ -44,7 +44,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers( "/v1/user/self").hasAuthority("USER")
                 .antMatchers( "/v1/recipe/").hasAuthority("USER")
                 .antMatchers( HttpMethod.DELETE,"/v1/recipe/{id}").hasAuthority("USER")
-                .antMatchers( HttpMethod.PUT,"/v1/recipe/{id}").hasAuthority("USER");
+                .antMatchers( HttpMethod.PUT,"/v1/recipe/{id}").hasAuthority("USER")
+                .antMatchers( HttpMethod.POST,"/v1/recipe/{id}/image").hasAuthority("USER")
+                .antMatchers( HttpMethod.DELETE,"/v1/recipe/{id}/image/{imageId}").hasAuthority("USER");
         http.
                 csrf().disable()
                 // don't create session

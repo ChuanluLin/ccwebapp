@@ -1,17 +1,16 @@
 package com.csye6225.demo.controller;
 
 import com.csye6225.demo.exception.DataValidationException;
-import com.csye6225.demo.pojo.NutritionInformation;
-import com.csye6225.demo.pojo.OrderedList;
-import com.csye6225.demo.pojo.Recipe;
-import com.csye6225.demo.pojo.User;
+import com.csye6225.demo.pojo.*;
 import com.csye6225.demo.repository.RecipeRepository;
 import com.csye6225.demo.repository.UserRepository;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -74,7 +73,7 @@ public class RecipeController {
         }
 
         String title = recipeObj.getString("title");
-        String cusine = recipeObj.getString("cusine");
+        String cuisine = recipeObj.getString("cuisine");
         //Ingredients: Set, avoid saving duplicate items
         Set<String> ingredients = new HashSet<String>();
         JSONArray ingArray  = recipeObj.getJSONArray("ingredients");
@@ -109,16 +108,23 @@ public class RecipeController {
         nutrition_information.setSodium_in_mg(sodium_in_mg);
         nutrition_information.setCarbohydrates_in_grams(carbohydrates_in_grams);
         nutrition_information.setProtein_in_grams(protein_in_grams);
+        //Image
+        Image image = new Image();
+        image.setFilename("");
+        image.setUrl("");
+        String uuid = UUID.randomUUID().toString().replaceAll("-","");
+        image.setImageid(uuid);
 
         newRecipe.setCook_time_in_min(cook_time_in_min);
         newRecipe.setPrep_time_in_min(prep_time_in_min);
         newRecipe.setTotal_time_in_min(cook_time_in_min+prep_time_in_min);
         newRecipe.setTitle(title);
-        newRecipe.setCusine(cusine);
+        newRecipe.setCusine(cuisine);
         newRecipe.setIngredients(ingredients);
         newRecipe.setServings(servings);
         newRecipe.setSteps(steps);
         newRecipe.setNutrition_information(nutrition_information);
+        newRecipe.setImage(image);
         newRecipe.setCreated_ts(getDatetime());
         newRecipe.setUpdated_ts(getDatetime());
 
@@ -266,8 +272,21 @@ public class RecipeController {
             throw new DataValidationException(getDatetime(), 404, "Not Found", "Recipe Not Found");
         }
         ObjectMapper mapper = new ObjectMapper();
-        String userJSON = mapper.writeValueAsString(recipe);
-        return new ResponseEntity<>(userJSON,HttpStatus.OK) ;
+        String recipeJSON = mapper.writeValueAsString(recipe);
+        return new ResponseEntity<>(recipeJSON,HttpStatus.OK) ;
+    }
+
+    @GetMapping(path = "/v1/recipes", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<String> newestrecipeGET() throws IOException {
+        List <Recipe> recipeList = recipeRepository.findByAndSort("4028a6816df5262b016df5291d4c0000", new Sort("created_ts"));
+        Recipe newRecipe = recipeList.get(0);
+        if(newRecipe == null){
+            throw new DataValidationException(getDatetime(), 404, "Not Found", "Recipe Not Found");
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        String recipeJSON = mapper.writeValueAsString(newRecipe);
+        return new ResponseEntity<>(recipeJSON,HttpStatus.OK) ;
     }
 
     public String getDatetime() {

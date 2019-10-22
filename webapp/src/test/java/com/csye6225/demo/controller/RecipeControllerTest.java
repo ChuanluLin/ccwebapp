@@ -1,6 +1,6 @@
 package com.csye6225.demo.controller;
 
-import com.csye6225.demo.pojo.Recipie;
+import com.csye6225.demo.pojo.Recipe;
 import com.csye6225.demo.pojo.User;
 import com.csye6225.demo.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,7 +25,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class RecipieControllerTest {
+public class RecipeControllerTest {
     @Autowired
     private WebApplicationContext wac;
     @Autowired
@@ -33,7 +33,7 @@ public class RecipieControllerTest {
 
     private MockMvc mockMvc;
     private User test_user;
-    private static Recipie createdRecipie;
+    private static Recipe createdRecipe;
     private static boolean initialized = false;
 
     @Before
@@ -59,7 +59,7 @@ public class RecipieControllerTest {
     }
 
     @Test
-    public void createRecipie() throws Exception {
+    public void createRecipe() throws Exception {
         Authentication authToken = new TestingAuthenticationToken("test@email.com", null);
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
@@ -96,7 +96,7 @@ public class RecipieControllerTest {
                 "}";
 
         ResultActions resultActions =
-            mockMvc.perform(MockMvcRequestBuilders.post("/v1/recipie/")
+            mockMvc.perform(MockMvcRequestBuilders.post("/v1/recipe/")
                 .principal(authToken)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(json))
@@ -110,12 +110,12 @@ public class RecipieControllerTest {
         MvcResult result = resultActions.andReturn();
         String contentAsString = result.getResponse().getContentAsString();
         // parse json to object
-        createdRecipie = objectMapper.readValue(contentAsString, Recipie.class);
+        Recipe createdRecipe = objectMapper.readValue(contentAsString, Recipe.class);
     }
 
     @Test
-    public void recipieGET() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/v1/recipie/"+createdRecipie.getId())
+    public void recipeGET() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/v1/recipe/"+createdRecipe.getId())
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 //the root element of the query，for example, $.length() represents the whole returned document
@@ -125,7 +125,7 @@ public class RecipieControllerTest {
     }
 
     @Test
-    public void recipieUpdate() throws Exception {
+    public void recipeUpdate() throws Exception {
         Authentication authToken = new TestingAuthenticationToken("test@email.com", null);
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
@@ -161,7 +161,7 @@ public class RecipieControllerTest {
                 "}";
 
         ResultActions resultActions =
-                mockMvc.perform(MockMvcRequestBuilders.put("/v1/recipie/"+createdRecipie.getId())
+                mockMvc.perform(MockMvcRequestBuilders.put("/v1/recipe/"+createdRecipe.getId())
                         .principal(authToken)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .content(json))
@@ -173,12 +173,12 @@ public class RecipieControllerTest {
     }
 
     @Test
-    public void recipieZDelete() throws Exception {
+    public void recipeZDelete() throws Exception {
         Authentication authToken = new TestingAuthenticationToken("test@email.com", null);
         SecurityContextHolder.getContext().setAuthentication(authToken);
         System.out.println("principal:"+ SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/v1/recipie/"+createdRecipie.getId())
+        mockMvc.perform(MockMvcRequestBuilders.delete("/v1/recipe/"+createdRecipe.getId())
                 .principal(authToken)
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(MockMvcResultMatchers.status().isNoContent())
