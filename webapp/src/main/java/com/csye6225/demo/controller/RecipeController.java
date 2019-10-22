@@ -279,8 +279,9 @@ public class RecipeController {
     @GetMapping(path = "/v1/recipes", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> newestrecipeGET() throws IOException {
-        List <Recipe> recipeList = recipeRepository.findByAndSort("4028a6816df5262b016df5291d4c0000", new Sort("created_ts"));
-        Recipe newRecipe = recipeList.get(0);
+        List <Recipe> recipeList = recipeRepository.findInOrders();
+        int len = recipeList.size();
+        Recipe newRecipe = recipeList.get(len-1);
         if(newRecipe == null){
             throw new DataValidationException(getDatetime(), 404, "Not Found", "Recipe Not Found");
         }

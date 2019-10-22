@@ -10,6 +10,6 @@ import java.util.List;
 public interface RecipeRepository extends CrudRepository<Recipe, Integer> {
     public Recipe findById(String id);
 
-    @Query("select u from Recipe u where u.author_id = ?1")
-    List<Recipe> findByAndSort(String author_id, Sort sort);
+    @Query("select u from Recipe u order by u.created_ts")
+    List<Recipe> findInOrders();
 }
