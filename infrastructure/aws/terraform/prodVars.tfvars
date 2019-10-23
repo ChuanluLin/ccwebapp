@@ -1,3 +1,4 @@
+
 availability_zone1 = "us-east-2a"
 availability_zone2 = "us-east-2b"
 availability_zone3 = "us-east-2c"
