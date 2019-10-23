@@ -4,6 +4,7 @@
       "Type" : "AWS::EC2::VPC",
       "Properties" : {
         "CidrBlock" : {"Ref": "VPCCIDR"},
+		"EnableDnsHostnames" : true,
         "Tags" : [ {"Key" : "Name", "Value" : {"Fn::Sub" : "${AWS::StackName}-csye6225-vpc"} }]
       }
     },

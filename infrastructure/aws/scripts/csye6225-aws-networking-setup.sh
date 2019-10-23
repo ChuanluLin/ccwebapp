@@ -13,6 +13,11 @@ export AWS_PROFILE=$Profile_Name
 
 
 VPC_NAME=$1
+if [ `aws ec2 describe-vpcs --filter "Name=tag:Name,Values=$VPC_NAME" --query 'Vpcs[*].{id:VpcId}' --output text` ]
+then 
+  echo "$VPC_NAME VPC existed"
+  exit 0
+fi
 VPC_CIDR=$2
 AWS_Region=$(aws configure get region)
 IGW_NAME=$VPC_NAME"-InternetGateway"
