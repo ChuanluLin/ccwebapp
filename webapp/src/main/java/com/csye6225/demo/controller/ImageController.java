@@ -95,7 +95,7 @@ public class ImageController {
             newImage.setContent_type(metadata.getContentType());
             newImage.setMd5(metadata.getETag());
             newImage.setLast_modified(metadata.getLastModified().toString());
-            
+
             newImage.setUrl(url);
             newRecipe.setImage(newImage);
             recipeRepository.save(newRecipe);
