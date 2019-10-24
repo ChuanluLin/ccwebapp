@@ -1,12 +1,17 @@
 package com.csye6225.demo.controller;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
+import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.*;
 import com.csye6225.demo.exception.DataValidationException;
 import com.csye6225.demo.pojo.Image;
 import com.csye6225.demo.pojo.Recipe;
@@ -37,9 +42,9 @@ public class ImageController {
     private UserRepository userRepository;
 
     AmazonS3 s3;
-    String AWS_ACCESS_KEY = "AKIATVMPQXBOK53OENVK";
-    String AWS_SECRET_KEY = "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";
-    String bucketName = "webapp.zerolin.me";
+    String AWS_ACCESS_KEY = "AKIAWWNJIPHBGA5N4WAU";
+    String AWS_SECRET_KEY = "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";
+    String bucketName = "webapp.syriii.me";
 
     @PostMapping(path = "/v1/recipe/{id}/image", produces = "application/json")
     @ResponseBody
@@ -49,22 +54,52 @@ public class ImageController {
         if(newRecipe == null){
             throw new DataValidationException(getDatetime(), 404, "Not Found", "Recipe Not Found");
         }
-        String uuid = UUID.randomUUID().toString().replaceAll("-","");
-        Image newImage = newRecipe.getImage();
-        newImage.setImageid(uuid);
+        AWSCredentials credentials = new BasicAWSCredentials(AWS_ACCESS_KEY,AWS_SECRET_KEY);
+//        AmazonS3 s3 = AmazonS3ClientBuilder.standard()
+//                .withCredentials(new AWSStaticCredentialsProvider(credentials))
+//                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("endpoint","region"))//endpoint,region请指定为NOS支持的（us-east-1:hz,us-east2:bj）
+//                .build();
         s3 = new AmazonS3Client(new BasicAWSCredentials(AWS_ACCESS_KEY, AWS_SECRET_KEY));
         s3.setRegion(Region.getRegion(Regions.US_EAST_1));
+        //exist image
+        if(newRecipe.getImage() != null){
+            s3.deleteObject(bucketName, "upload/"+newRecipe.getImage().getFilename());
+            newRecipe.setImage(null);
+        }
+        String uuid = UUID.randomUUID().toString().replaceAll("-","");
+        Image newImage = new Image();
+        newImage.setImageid(uuid);
+        newRecipe.setImage(newImage);
         try {
             String bucketPath = bucketName + "/upload";
             String FileName = file.getOriginalFilename();
             String suffix = FileName.substring(FileName.lastIndexOf(".") + 1);
+            if(!(suffix.equals("jpg") || suffix.equals("png") || suffix.equals("jpeg"))){
+                System.out.println(suffix);
+                throw new DataValidationException(getDatetime(), 400, "Bad Request", "Unavailable File Type");
+            }
             String newName = newImage.getImageid()+"."+suffix;
             newImage.setFilename(newName);
             File uploadFile = convertFile(file);
-            s3.putObject(new PutObjectRequest(bucketPath, newName, uploadFile));
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketPath, newName, uploadFile);
+            s3.putObject(putObjectRequest);
 //            GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest(bucketName, FileName);
 //            URL url = s3.generatePresignedUrl(urlRequest);
             String url = s3.getUrl(bucketName, "upload/" + newName).toExternalForm();
+
+            //get metadata
+            ObjectMetadata metadata = s3.getObjectMetadata(bucketName, "upload/" + newName);
+//            System.out.println(metadata.getDate());
+            System.out.println(metadata.getContentLength());
+            System.out.println(metadata.getLastModified());
+            System.out.println(metadata.getContentMD5());
+            System.out.println(metadata.getServerSideEncryption());
+            System.out.println(metadata.getVersionId());
+//            System.out.println(metadata.getdeletemaker);
+            System.out.println(metadata.getStorageClass());
+//            System.out.println(metadata.getredirectlocation);
+            System.out.println(metadata.getSSEAwsKmsKeyId());
+            System.out.println(metadata.getSSECustomerAlgorithm());
 
             newImage.setUrl(url);
             newRecipe.setImage(newImage);
@@ -98,10 +133,12 @@ public class ImageController {
         s3.setRegion(Region.getRegion(Regions.US_EAST_1));
         s3.deleteObject(bucketName, "upload/"+filename);
 
-        newImage.setFilename("");
-        newImage.setUrl("");
-        newImage.setImageid("");
-        newRecipe.setImage(newImage);
+//        newImage.setFilename("");
+//        newImage.setUrl("");
+//        newImage.setImageid("");
+//        newRecipe.setImage(newImage);
+//        recipeRepository.save(newRecipe);
+        newRecipe.setImage(null);
         recipeRepository.save(newRecipe);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -135,4 +172,5 @@ public class ImageController {
         String dateString = format.format(currentTime);
         return dateString;
     }
+
 }
