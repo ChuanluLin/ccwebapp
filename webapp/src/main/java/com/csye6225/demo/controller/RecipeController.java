@@ -109,11 +109,11 @@ public class RecipeController {
         nutrition_information.setCarbohydrates_in_grams(carbohydrates_in_grams);
         nutrition_information.setProtein_in_grams(protein_in_grams);
         //Image
-        Image image = new Image();
-        image.setFilename("");
-        image.setUrl("");
-        String uuid = UUID.randomUUID().toString().replaceAll("-","");
-        image.setImageid(uuid);
+//        Image image = new Image();
+//        image.setFilename("");
+//        image.setUrl("");
+//        String uuid = UUID.randomUUID().toString().replaceAll("-","");
+//        image.setImageid(uuid);
 
         newRecipe.setCook_time_in_min(cook_time_in_min);
         newRecipe.setPrep_time_in_min(prep_time_in_min);
@@ -124,7 +124,7 @@ public class RecipeController {
         newRecipe.setServings(servings);
         newRecipe.setSteps(steps);
         newRecipe.setNutrition_information(nutrition_information);
-        newRecipe.setImage(image);
+//        newRecipe.setImage(image);
         newRecipe.setCreated_ts(getDatetime());
         newRecipe.setUpdated_ts(getDatetime());
 

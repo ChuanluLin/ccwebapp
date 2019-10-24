@@ -18,13 +18,13 @@ import java.util.Set;
 @Table(name="recipe")
 @GenericGenerator(name = "jpa-uuid", strategy = "uuid")
 public class Recipe {
-    @Column(name = "image", nullable = false)
-    private Image image;
-
     @Id
     @GeneratedValue(generator = "jpa-uuid")
     @Column(name="id", unique = true, nullable = false, length = 32)
     private String id;
+
+    @Column(name = "image")
+    private Image image;
 
     @Column(name = "created_ts", nullable = false)
     private String created_ts;
