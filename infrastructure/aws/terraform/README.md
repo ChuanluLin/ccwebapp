@@ -35,21 +35,41 @@ Make sure install Terraform before running scripts in this folder.
 ### Run Script
 
 Before running the script you should set all variables at files with suffix with \*.tfvars.
-You should set availability zones, aws profile, aws region, subnet cider blocks, vpc cidr block, vpc name.
+You should set availability zones, aws profile, aws region, subnet cider blocks, vpc cidr block, vpc name, domain name, ami id, key name, public key path
 example: devVars.tfvars
 ```
-availability_zone1 = "us-east-1b"
-availability_zone2 = "us-east-1c"
-availability_zone3 = "us-east-1d"
+availability_zone1 = "us-east-1a"
+availability_zone2 = "us-east-1b"
+availability_zone3 = "us-east-1c"
 aws_profile = "dev"
 aws_region = "us-east-1"
-subnet1_cidr_block = "10.2.0.0/24"
-subnet2_cidr_block = "10.2.4.0/24"
-subnet3_cidr_block = "10.2.6.0/24"
-vpc_cidr_block = "10.2.0.0/16"
+subnet1_cidr_block = "10.0.1.0/24"
+subnet2_cidr_block = "10.0.2.0/24"
+subnet3_cidr_block = "10.0.3.0/24"
+vpc_cidr_block = "10.0.0.0/16"
 vpc_name = "dev"
 
+
+domain_name = "*.me"
+ami_id = "ami-*************"
+key_name = "key"
+public_key_path = "~/key.pub"
+
 ```
+
+If you havn't yet created an ssh key, it can be done with the following command:
+NOTE: REMEMBER THE PASSWORD YOU SET AND NEVER SHARE YOUR PRIVATE KEY TO ANYONE, INCLUDING AWS
+```
+ssh-keygen
+```
+
+The command will create a private key and public key. 
+Public key should be set as terraform variable values and uploaded to AWS Key Pair.
+Private key should be store in a safe place, set as read-only and NEVER SHARE to others.
+```
+chmod 400 key
+```
+
 
 Run the below command to initialize terraform. THIS STEP IS NECESSARY WHEN USING TERRAFORM.
 ```
