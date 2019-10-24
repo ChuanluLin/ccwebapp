@@ -1,4 +1,3 @@
-
 availability_zone1 = "us-east-2a"
 availability_zone2 = "us-east-2b"
 availability_zone3 = "us-east-2c"
@@ -9,3 +8,5 @@ subnet2_cidr_block = "10.0.2.0/24"
 subnet3_cidr_block = "10.0.3.0/24"
 vpc_cidr_block = "10.0.0.0/16"
 vpc_name = "prod"
+domain_name = ""
+ami_id = ""
