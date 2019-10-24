@@ -252,7 +252,7 @@ resource "aws_instance" "web" {
   }
 
   # This EC2 instance must be created only after the RDS instance has been created.
-  depends_on = ["${aws_db_instance.example}"]
+  depends_on = [aws_db_instance.default]
 
   tags = {
     Name       = "csye6225-ec2"
