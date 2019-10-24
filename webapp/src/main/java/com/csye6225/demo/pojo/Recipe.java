@@ -20,7 +20,7 @@ import java.util.Set;
 public class Recipe {
     @Column(name = "image")
     private Image image;
-    
+
     @Id
     @GeneratedValue(generator = "jpa-uuid")
     @Column(name="id", unique = true, nullable = false, length = 32)

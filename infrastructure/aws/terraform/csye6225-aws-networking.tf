@@ -211,30 +211,20 @@ resource "aws_db_instance" "default" {
 }
 
 # Key pair
-# resource "aws_key_pair" "auth" {
-#   key_name   = "${var.key_name}"
-#   public_key = "${file(var.public_key_path)}"
-# }
+#resource "aws_key_pair" "auth" {
+#  key_name   = "${var.key_name}"
+#  public_key = "${var.public_key_path}"
+#}
 
 # EC2 instance
 resource "aws_instance" "web" {
-  # connection {
-  #   # The default username for our AMI
-  #   user = "centos"
-  #   host = "${self.public_ip}"
-  #   # The connection will use the local SSH agent for authentication.
-  #   private_key = "${file("/Users/ftl/Documents/My Documents/Course 2019/cyse 6225 cloud/Assignment 5/temp.pem")}"
-  # }
 
   instance_type           = "t2.micro"
   disable_api_termination = false
-
-  # custom ami
-  # ami = "${lookup(var.aws_amis, var.aws_region)}"
   ami = "${var.ami_id}"
 
-  # The name of our SSH keypair we created above.
-  # key_name = "${aws_key_pair.auth.id}"
+
+#  key_name = "${aws_key_pair.auth.id}"
 
   # Our Security group to allow HTTP and SSH access
   vpc_security_group_ids = ["${aws_security_group.application.id}"]
@@ -252,7 +242,7 @@ resource "aws_instance" "web" {
   }
 
   # This EC2 instance must be created only after the RDS instance has been created.
-  depends_on = ["${aws_db_instance.example}"]
+  depends_on = [aws_db_instance.default]
 
   tags = {
     Name       = "csye6225-ec2"

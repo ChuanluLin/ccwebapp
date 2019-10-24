@@ -16,28 +16,16 @@ public class Image {
     @Column(name = "filename")
     private String filename;
 
-    @Column(name = "Date")
-    private String Date;
-    @Column(name = "Content_Length")
-    private String Content_Length;
-    @Column(name = "Last_Modified")
-    private String Last_Modified;
-    @Column(name = "Content_MD5")
-    private String Content_MD5;
-    @Column(name = "x_amz_server_side_encryption")
-    private String x_amz_server_side_encryption;
-    @Column(name = "x_amz_version_id")
-    private String x_amz_version_id;
-    @Column(name = "x_amz_delete_marker")
-    private String x_amz_delete_marker;
-    @Column(name = "x_amz_storage_class")
-    private String x_amz_storage_class;
-    @Column(name = "x_amz_website_redirect_location")
-    private String x_amz_website_redirect_location;
-    @Column(name = "x_amz_server_side_encryption_aws_kms_key_id")
-    private String x_amz_server_side_encryption_aws_kms_key_id;
-    @Column(name = "x_amz_server_side_encryption_customer_algorithm")
-    private String x_amz_server_side_encryption_customer_algorithm;
+    @Column(name = "accept_ranges")
+    private String accept_ranges;
+    @Column(name = "content_length")
+    private String content_length;
+    @Column(name = "content_type")
+    private String content_type;
+    @Column(name = "md5")
+    private String md5;
+    @Column(name = "last_modified")
+    private String last_modified;
 
     public String getImageid() {
         return imageid;
@@ -66,92 +54,44 @@ public class Image {
 
     //metadata
     @JsonIgnore
-    public String getDate() {
-        return Date;
+    public String getAccept_ranges() {
+        return accept_ranges;
     }
     @JsonIgnore
-    public String getContent_Length() {
-        return Content_Length;
+    public String getContent_length() {
+        return content_length;
     }
     @JsonIgnore
-    public String getLast_Modified() {
-        return Last_Modified;
+    public String getContent_type() {
+        return content_type;
     }
     @JsonIgnore
-    public String getContent_MD5() {
-        return Content_MD5;
+    public String getMd5() {
+        return md5;
     }
     @JsonIgnore
-    public String getX_amz_server_side_encryption() {
-        return x_amz_server_side_encryption;
-    }
-    @JsonIgnore
-    public String getX_amz_version_id() {
-        return x_amz_version_id;
-    }
-    @JsonIgnore
-    public String getX_amz_delete_marker() {
-        return x_amz_delete_marker;
-    }
-    @JsonIgnore
-    public String getX_amz_storage_class() {
-        return x_amz_storage_class;
-    }
-    @JsonIgnore
-    public String getX_amz_website_redirect_location() {
-        return x_amz_website_redirect_location;
-    }
-    @JsonIgnore
-    public String getX_amz_server_side_encryption_aws_kms_key_id() {
-        return x_amz_server_side_encryption_aws_kms_key_id;
-    }
-    @JsonIgnore
-    public String getX_amz_server_side_encryption_customer_algorithm() {
-        return x_amz_server_side_encryption_customer_algorithm;
+    public String getLast_modified() {
+        return last_modified;
     }
 
-    public void setDate(String date) {
-        Date = date;
+    public void setAccept_ranges(String accept_ranges) {
+        this.accept_ranges = accept_ranges;
     }
 
-    public void setContent_Length(String content_Length) {
-        Content_Length = content_Length;
+    public void setContent_length(String content_length) {
+        this.content_length = content_length;
     }
 
-    public void setLast_Modified(String last_Modified) {
-        Last_Modified = last_Modified;
+    public void setContent_type(String content_type) {
+        this.content_type = content_type;
     }
 
-    public void setContent_MD5(String content_MD5) {
-        Content_MD5 = content_MD5;
+    public void setMd5(String md5) {
+        this.md5 = md5;
     }
 
-    public void setX_amz_server_side_encryption(String x_amz_server_side_encryption) {
-        this.x_amz_server_side_encryption = x_amz_server_side_encryption;
-    }
-
-    public void setX_amz_version_id(String x_amz_version_id) {
-        this.x_amz_version_id = x_amz_version_id;
-    }
-
-    public void setX_amz_delete_marker(String x_amz_delete_marker) {
-        this.x_amz_delete_marker = x_amz_delete_marker;
-    }
-
-    public void setX_amz_storage_class(String x_amz_storage_class) {
-        this.x_amz_storage_class = x_amz_storage_class;
-    }
-
-    public void setX_amz_website_redirect_location(String x_amz_website_redirect_location) {
-        this.x_amz_website_redirect_location = x_amz_website_redirect_location;
-    }
-
-    public void setX_amz_server_side_encryption_aws_kms_key_id(String x_amz_server_side_encryption_aws_kms_key_id) {
-        this.x_amz_server_side_encryption_aws_kms_key_id = x_amz_server_side_encryption_aws_kms_key_id;
-    }
-
-    public void setX_amz_server_side_encryption_customer_algorithm(String x_amz_server_side_encryption_customer_algorithm) {
-        this.x_amz_server_side_encryption_customer_algorithm = x_amz_server_side_encryption_customer_algorithm;
+    public void setLast_modified(String last_modified) {
+        this.last_modified = last_modified;
     }
 }
 
