@@ -16,7 +16,7 @@ resource "aws_vpc" "default" {
 # DEFAULT INTERNET GATEWAY
 resource "aws_internet_gateway" "default" {
   vpc_id = "${aws_vpc.default.id}"
-
+  
   tags = {
     Name = "igw-${var.vpc_name}"
   }
@@ -207,6 +207,7 @@ resource "aws_db_instance" "default" {
   publicly_accessible  = true
   name                 = "csye6225"
   vpc_security_group_ids  = ["${aws_security_group.database.id}"]
+  skip_final_snapshot  = true
 }
 
 # Key pair
@@ -229,7 +230,7 @@ resource "aws_instance" "web" {
   disable_api_termination = false
 
   # custom ami
-  #ami = "${lookup(var.aws_amis, var.aws_region)}"
+  # ami = "${lookup(var.aws_amis, var.aws_region)}"
   ami = "${var.ami_id}"
 
   # The name of our SSH keypair we created above.
@@ -240,10 +241,18 @@ resource "aws_instance" "web" {
 
   subnet_id = "${aws_subnet.public.0.id}"
 
+  ebs_block_device {
+      device_name           = "/dev/sda1"  
+      delete_on_termination = true
+  }
+
   root_block_device {
       volume_type = "gp2"
       volume_size = 20
   }
+
+  # This EC2 instance must be created only after the RDS instance has been created.
+  depends_on = ["${aws_db_instance.example}"]
 
   tags = {
     Name       = "csye6225-ec2"
@@ -251,7 +260,7 @@ resource "aws_instance" "web" {
   }
 }
 
-# # DynamoDB Table
+# DynamoDB Table
 resource "aws_dynamodb_table" "basic-dynamodb-table" {
   name           = "csye6225"
   billing_mode   = "PROVISIONED"
