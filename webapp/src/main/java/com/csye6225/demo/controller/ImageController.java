@@ -89,18 +89,13 @@ public class ImageController {
 
             //get metadata
             ObjectMetadata metadata = s3.getObjectMetadata(bucketName, "upload/" + newName);
-//            System.out.println(metadata.getDate());
-            System.out.println(metadata.getContentLength());
-            System.out.println(metadata.getLastModified());
-            System.out.println(metadata.getContentMD5());
-            System.out.println(metadata.getServerSideEncryption());
-            System.out.println(metadata.getVersionId());
-//            System.out.println(metadata.getdeletemaker);
-            System.out.println(metadata.getStorageClass());
-//            System.out.println(metadata.getredirectlocation);
-            System.out.println(metadata.getSSEAwsKmsKeyId());
-            System.out.println(metadata.getSSECustomerAlgorithm());
-
+//            System.out.println(metadata.getRawMetadata());
+            newImage.setAccept_ranges(metadata.getRawMetadataValue("Accept-Ranges").toString());
+            newImage.setContent_length(String.valueOf(metadata.getContentLength()));
+            newImage.setContent_type(metadata.getContentType());
+            newImage.setMd5(metadata.getETag());
+            newImage.setLast_modified(metadata.getLastModified().toString());
+            
             newImage.setUrl(url);
             newRecipe.setImage(newImage);
             recipeRepository.save(newRecipe);

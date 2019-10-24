@@ -207,6 +207,7 @@ resource "aws_db_instance" "default" {
   publicly_accessible  = true
   name                 = "csye6225"
   vpc_security_group_ids  = ["${aws_security_group.database.id}"]
+  skip_final_snapshot  = true
 }
 
 # Key pair
