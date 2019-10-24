@@ -7,7 +7,7 @@ provider "aws" {
 # VPC
 resource "aws_vpc" "default" {
   cidr_block           = "${var.vpc_cidr_block}"
-  EnableDnsHostnames = true
+  enable_dns_hostnames = true
   tags = {
     Name = "vpc-${var.vpc_name}"
   }
@@ -29,7 +29,7 @@ resource "aws_subnet" "public" {
   count                   = "${var.subnet_count}"
   cidr_block              = "${element(list(var.subnet1_cidr_block, var.subnet2_cidr_block, var.subnet3_cidr_block), count.index)}"
   availability_zone       = "${element(list(var.availability_zone1, var.availability_zone2, var.availability_zone3), count.index)}"
-  # map_public_ip_on_launch = true
+  map_public_ip_on_launch = true
 
   tags = {
     Name               = "public${count.index}-${var.vpc_name}"
@@ -57,14 +57,13 @@ resource "aws_route_table_association" "public" {
   route_table_id = "${aws_route_table.public.id}"
 }
 
-# Securtiy Group
-resource "aws_security_group" "default" {
+# Securtiy Group - Application
+resource "aws_security_group" "application" {
   vpc_id      = "${aws_vpc.default.id}"
 
   tags = {
-    Name = "sg-${var.vpc_name}"
+    Name = "application"
   }
-
 
   # SSH access from anywhere
   ingress {
@@ -79,30 +78,23 @@ resource "aws_security_group" "default" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
-  }
-
-  # DB rules
-  ingress {
-    from_port   = 3306
-    to_port     = 3306
-    protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port   = 5432
-    to_port     = 5432
+    from_port   = 8080
+    to_port     = 8080
     protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
+
   # outbound internet access
   egress {
     from_port   = 0
@@ -112,29 +104,46 @@ resource "aws_security_group" "default" {
   }
 }
 
-# Key pair
-resource "aws_key_pair" "auth" {
-  key_name   = "${var.key_name}"
-  public_key = "${file(var.public_key_path)}"
+# Securtiy Group - Databse
+resource "aws_security_group" "database" {
+  vpc_id      = "${aws_vpc.default.id}"
+
+  tags = {
+    Name = "database"
+  }
+
+  # DB rules
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    security_groups = ["${aws_security_group.application.id}"]
+  }
+
+  ingress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    security_groups = ["${aws_security_group.application.id}"]
+  }
+
+  # outbound internet access
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
-# RDS instance
-resource "aws_db_instance" "default" {
-  engine               = "mysql"
-  engine_version       = "5.7"
-  instance_class       = "db.t2.medium"
-  multi_az             = false
-  identifier           = "csye6225-fall2019"
-  username             = "dbuser"
-  password             = "QWE123qwe!@#"
-  db_subnet_group_name = 
-  publicly_accessible  = true
-  name                 = "csye6225"
+#AWS KMS Key
+resource "aws_kms_key" "mykey" {
+  description             = "This key is used to encrypt bucket objects"
+  deletion_window_in_days = 10
 }
-
 
 # S3 Bucket
-resource "aws_s3_bucket" "webapp.${var.domain_name}" {
+resource "aws_s3_bucket" "webapp" {
   bucket        = "webapp.${var.domain_name}"
   acl           = "private"
   force_destroy = true
@@ -164,7 +173,6 @@ resource "aws_s3_bucket" "webapp.${var.domain_name}" {
     }
   }
 
-
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
@@ -175,57 +183,88 @@ resource "aws_s3_bucket" "webapp.${var.domain_name}" {
   }
 }
 
-resource "aws_kms_key" "mykey" {
-  description             = "This key is used to encrypt bucket objects"
-  deletion_window_in_days = 10
+# RDS Subnet Group
+resource "aws_db_subnet_group" "default" {
+  name       = "main"
+  subnet_ids = ["${aws_subnet.public.0.id}","${aws_subnet.public.1.id}","${aws_subnet.public.2.id}"]
+
+  tags = {
+    Name = "My DB subnet group"
+  }
 }
 
+# RDS instance
+resource "aws_db_instance" "default" {
+  allocated_storage    = 20
+  engine               = "mysql"
+  engine_version       = "8.0.16"
+  instance_class       = "db.t2.micro"
+  multi_az             = false
+  identifier           = "csye6225-fall2019"
+  username             = "dbuser"
+  password             = "Qwer123!"
+  db_subnet_group_name = "${aws_db_subnet_group.default.name}"
+  publicly_accessible  = true
+  name                 = "csye6225"
+  vpc_security_group_ids  = ["${aws_security_group.database.id}"]
+}
 
-# DynamoDB Table
-
+# Key pair
+# resource "aws_key_pair" "auth" {
+#   key_name   = "${var.key_name}"
+#   public_key = "${file(var.public_key_path)}"
+# }
 
 # EC2 instance
 resource "aws_instance" "web" {
-  connection {
-    # The default username for our AMI
-    user = "ubuntu"
-    host = "${self.public_ip}"
-    # The connection will use the local SSH agent for authentication.
-  }
+  # connection {
+  #   # The default username for our AMI
+  #   user = "centos"
+  #   host = "${self.public_ip}"
+  #   # The connection will use the local SSH agent for authentication.
+  #   private_key = "${file("/Users/ftl/Documents/My Documents/Course 2019/cyse 6225 cloud/Assignment 5/temp.pem")}"
+  # }
 
   instance_type           = "t2.micro"
   disable_api_termination = false
-  name                    = "csye6225-ec2"
 
   # custom ami
-  ami = "${lookup(var.aws_amis, var.aws_region)}"
+  #ami = "${lookup(var.aws_amis, var.aws_region)}"
+  ami = "${var.ami_id}"
 
   # The name of our SSH keypair we created above.
-  key_name = "${aws_key_pair.auth.id}"
+  # key_name = "${aws_key_pair.auth.id}"
 
   # Our Security group to allow HTTP and SSH access
-  vpc_security_group_ids = ["${aws_security_group.default.id}"]
+  vpc_security_group_ids = ["${aws_security_group.application.id}"]
 
-  subnet_id = "${aws_subnet.default.id}"
+  subnet_id = "${aws_subnet.public.0.id}"
 
-  root_block_device = [
-    {
+  root_block_device {
       volume_type = "gp2"
       volume_size = 20
-    },
-  ]
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo apt-get -y update",
-      "sudo apt-get -y install nginx",
-      "sudo service nginx start",
-    ]
   }
 
   tags = {
-    "Env"      = "Private"
-    "Location" = "Secret"
+    Name       = "csye6225-ec2"
+    Enironment = "${var.aws_profile}"
   }
 }
 
+# # DynamoDB Table
+resource "aws_dynamodb_table" "basic-dynamodb-table" {
+  name           = "csye6225"
+  billing_mode   = "PROVISIONED"
+  read_capacity  = 20
+  write_capacity = 20
+  hash_key       = "id"
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+
+  tags = {
+    Name        = "dynamodb-table-1"
+  }
+}
