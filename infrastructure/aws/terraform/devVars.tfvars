@@ -8,7 +8,9 @@ subnet2_cidr_block = "10.0.2.0/24"
 subnet3_cidr_block = "10.0.3.0/24"
 vpc_cidr_block = "10.0.0.0/16"
 vpc_name = "dev"
-domain_name = "syriii.me"
-ami_id = "ami-0df4c47855b6465d2"
-#key_name = "dev-ec2"
-#public_key_path = "~/Desktop/key_pair/dev-ec2.pem"
+
+
+domain_name = "*.me"
+ami_id = "ami-*************"
+key_name = "key"
+public_key_path = "~/key.pub"

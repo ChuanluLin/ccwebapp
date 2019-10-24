@@ -198,7 +198,7 @@ resource "aws_db_instance" "default" {
   allocated_storage    = 20
   engine               = "mysql"
   engine_version       = "8.0.16"
-  instance_class       = "db.t2.micro"
+  instance_class       = "db.t2.medium"
   multi_az             = false
   identifier           = "csye6225-fall2019"
   username             = "dbuser"
@@ -211,20 +211,27 @@ resource "aws_db_instance" "default" {
 }
 
 # Key pair
-#resource "aws_key_pair" "auth" {
-#  key_name   = "${var.key_name}"
-#  public_key = "${var.public_key_path}"
-#}
+resource "aws_key_pair" "auth" {
+  key_name   = "${var.key_name}"
+  public_key = "${file(var.public_key_path)}"
+}
 
 # EC2 instance
 resource "aws_instance" "web" {
+  # connection {
+  #   # The default username for our AMI
+  #   user = "centos"
+  #   host = "${self.public_ip}"
+  #   # The connection will use the local SSH agent for authentication.
+  #   private_key = "${file("")}"
+  # }
 
   instance_type           = "t2.micro"
   disable_api_termination = false
   ami = "${var.ami_id}"
 
 
-#  key_name = "${aws_key_pair.auth.id}"
+  key_name = "${aws_key_pair.auth.id}"
 
   # Our Security group to allow HTTP and SSH access
   vpc_security_group_ids = ["${aws_security_group.application.id}"]

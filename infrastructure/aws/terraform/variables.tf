@@ -46,18 +46,18 @@ variable "domain_name" {
   description = "The domain name"
 }
 
-# variable "public_key_path" {
-#   description = <<DESCRIPTION
-# Path to the SSH public key to be used for authentication.
-# Ensure this keypair is added to your local SSH agent so provisioners can
-# connect.
-# Example: ~/.ssh/id_rsa.pub
-# DESCRIPTION
-# }
+variable "public_key_path" {
+  description = <<DESCRIPTION
+Path to the SSH public key to be used for authentication.
+Ensure this keypair is added to your local SSH agent so provisioners can
+connect.
+Example: ~/.ssh/id_rsa.pub
+DESCRIPTION
+}
 
-# variable "key_name" {
-#   description = "Desired name of AWS key pair"
-# }
+variable "key_name" {
+  description = "Desired name of AWS key pair"
+}
 
 # variable "aws_amis" {
 #   default = {
