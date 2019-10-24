@@ -42,9 +42,9 @@ public class ImageController {
     private UserRepository userRepository;
 
     AmazonS3 s3;
-    String AWS_ACCESS_KEY = "AKIAWWNJIPHBGA5N4WAU";
-    String AWS_SECRET_KEY = "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";
-    String bucketName = "webapp.syriii.me";
+    String AWS_ACCESS_KEY = "";
+    String AWS_SECRET_KEY = "";
+    String bucketName = "webapp.******.me";
 
     @PostMapping(path = "/v1/recipe/{id}/image", produces = "application/json")
     @ResponseBody
