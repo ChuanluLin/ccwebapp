@@ -230,7 +230,7 @@ resource "aws_instance" "web" {
   disable_api_termination = false
   ami = "${var.ami_id}"
 
-
+  # The name of our SSH keypair we created above.
   key_name = "${aws_key_pair.auth.id}"
 
   # Our Security group to allow HTTP and SSH access
