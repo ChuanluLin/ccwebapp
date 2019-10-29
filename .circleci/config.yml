@@ -51,10 +51,7 @@ jobs:
             cp target/classes/application.properties artifacts  
       - run:
           name: Zip artifacts
-          command: ｜
-            cd artifacts
-            zip artifacts.zip
-            cd ..
+          command: zip -j artifacts.zip artifacts
 
       # store raw contents of src code
       - store_artifacts:
