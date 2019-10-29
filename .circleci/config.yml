@@ -60,7 +60,7 @@ jobs:
           command: zip -j artifacts/artifacts.zip artifacts/*.*  
       - run:
           name: Upload to AWS S3
-          command: aws s3 cp artifacts/artifacts.zip s3://codedeploy.tianlifeng.me/artifacts
+          command: aws s3 cp artifacts/application.properties s3://codedeploy.tianlifeng.me/artifacts
 
       # - run:
       #     name: Call AWS CodeDeploy
