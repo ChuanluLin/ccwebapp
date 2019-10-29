@@ -40,15 +40,15 @@ jobs:
       #     command: 
 
       - run:
-      name: Build artifacts (package into a jar)
-      command: mvn clean package  -Dmaven.test.skip=true
+          name: Build artifacts (package into a jar)
+          command: mvn clean package  -Dmaven.test.skip=true
       
       - run:
-        name: Collect artifacts
-        command: |
-          mkdir artifacts
-          cp target/demo-0.0.1-SNAPSHOT.jar artifacts
-          cp target/classes/application.properties artifacts
+          name: Collect artifacts
+          command: |
+            mkdir artifacts
+            cp target/demo-0.0.1-SNAPSHOT.jar artifacts
+            cp target/classes/application.properties artifacts
       
       - run:
           name: Zip artifacts and upload to AWS S3
