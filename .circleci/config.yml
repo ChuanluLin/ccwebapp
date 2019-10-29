@@ -11,7 +11,7 @@ jobs:
       - run:
           name: Install python3-pip
           command: |
-            sudo apt install curl
+            sudo apt install python3.8
             curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
             sudo python3 get-pip.py
       - run:
