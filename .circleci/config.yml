@@ -1,4 +1,6 @@
 version: 2
+orbs:
+  aws-s3: circleci/aws-s3@1.0.0
 jobs:
   build:
     docker:
@@ -58,10 +60,16 @@ jobs:
       - run:
           name: Zip artifacts
           command: zip -j artifacts/artifacts.zip artifacts/*.*  
-      - run:
-          name: Upload to AWS S3
-          command: aws s3 cp artifacts/application.properties s3://codedeploy.tianlifeng.me/artifacts
-
+      # - run:
+      #     name: Upload to AWS S3
+      #     command: aws s3 cp artifacts/application.properties s3://codedeploy.tianlifeng.me/artifacts
+      
+      # Upload to AWS S3
+      - aws-s3/copy:
+          from: artifacts/artifacts.zip
+          to: 's3://codedeploy.tianlifeng.me/artifacts'
+          arguments: '--dryrun'
+          
       # - run:
       #     name: Call AWS CodeDeploy
       #     command: 
