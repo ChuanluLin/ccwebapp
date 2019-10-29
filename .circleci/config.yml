@@ -49,19 +49,18 @@ jobs:
             mkdir artifacts
             cp target/demo-0.0.1-SNAPSHOT.jar artifacts
             cp target/classes/application.properties artifacts  
-      - run:
-          name: Zip artifacts
-          command: zip -j artifacts/artifacts.zip artifacts/*.*
-
+      
       # store raw contents of src code
       - store_artifacts:
           path: artifacts
           destination: ccwebapp
-      
-      # - run:
-      #     name: Upload to AWS S3
-      #     command: |
-      #       zip artifacts.zip artifacts
+
+      - run:
+          name: Zip artifacts
+          command: zip -j artifacts/artifacts.zip artifacts/*.*  
+      - run:
+          name: Upload to AWS S3
+          command: aws s3 sync artifacts s3://codedeploy.tianlifeng.me --region us-east-1
 
       # - run:
       #     name: Call AWS CodeDeploy
