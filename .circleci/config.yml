@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/openjdk:11.0.5-stretch
+      - image: circleci/openjdk:11.0.3
     
     working_directory: ~/ccwebapp/webapp
     
@@ -48,17 +48,20 @@ jobs:
           command: |
             mkdir artifacts
             cp target/demo-0.0.1-SNAPSHOT.jar artifacts
-            cp target/classes/application.properties artifacts
-      
+            cp target/classes/application.properties artifacts  
       - run:
-          name: Zip artifacts and upload to AWS S3
-          command: |
-            zip artifacts.zip artifacts
+          name: Zip artifacts
+          command: zip artifacts.zip artifacts
 
       # store raw contents of src code
       - store_artifacts:
           path: artifacts
           destination: ccwebapp
+      
+      # - run:
+      #     name: Upload to AWS S3
+      #     command: |
+      #       zip artifacts.zip artifacts
 
       # - run:
       #     name: Call AWS CodeDeploy
