@@ -2,7 +2,10 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/openjdk:11.0.5-stretch
+      - image: circleci/openjdk:11.0.5
+    
+    working_directory: ~/ccwebapp
+    
     steps:
       - checkout
       - run:
@@ -17,6 +20,27 @@ jobs:
       - run:
           name: Install awscli
           command: sudo pip install awscli
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - ccwebapp-{{ checksum "pom.xml" }}
+
+      - run: mvn dependency:go-offline
+
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: ccwebapp-{{ checksum "pom.xml" }}
+        
+      # package into a jar
+      - run: mvn clean package  -Dmaven.test.skip=true
+
+      # store raw contents of src code
+      - store_artifacts:
+          path: target/classes
+          destination: ccwebapp
+
       # - run:
       #     name: Run unit tests
       #     command: 
