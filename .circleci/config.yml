@@ -34,36 +34,36 @@ jobs:
           paths:
             - ~/.m2
           key: ccwebapp-{{ checksum "pom.xml" }}
-        
-      # package into a jar
-      - run: mvn clean package  -Dmaven.test.skip=true
-
-      # store raw contents of src code
-      - store_artifacts:
-          path: target/classes
-          destination: ccwebapp
 
       # - run:
       #     name: Run unit tests
       #     command: 
-      # - run:
-      #     name: Build artifacts
-      #     command: 
-      # - run:
-      #     name: Zip artifacts and upload to AWS S3
-      #     command: 
+
+      - run:
+      name: Build artifacts (package into a jar)
+      command: mvn clean package  -Dmaven.test.skip=true
+      
+      - run:
+        name: Collect artifacts
+        command: |
+          mkdir artifacts
+          cp target/demo-0.0.1-SNAPSHOT.jar artifacts
+          cp target/classes/application.properties artifacts
+      
+      - run:
+          name: Zip artifacts and upload to AWS S3
+          command: |
+            zip artifacts.zip artifacts
+
+      # store raw contents of src code
+      - store_artifacts:
+          path: artifacts
+          destination: ccwebapp
+
       # - run:
       #     name: Call AWS CodeDeploy
       #     command: 
-      # - run:
-      #     name: Validate Packer Template
-      #     command: ./packer validate -var-file=./ami-vars.json centos-ami.json
-      # - run:
-      #     name: Build AMI
-      #     command: |
-      #       ./packer build \
-      #       -var-file=./ami-vars.json \
-      #       centos-ami.json
+
     branches:
       only:
         - assign7
