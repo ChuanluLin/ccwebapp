@@ -2,7 +2,42 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/openjdk:8-jdk
+      - image: circleci/openjdk:11.0.5-stretch
     steps:
       - checkout
-      
+      - run:
+          name: Install packages
+          command: sudo apt-get update && sudo apt-get install wget zip unzip -y
+      - run:
+          name: Install python3-pip
+          command: |
+            sudo apt install curl
+            curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+            sudo python3 get-pip.py
+      - run:
+          name: Install awscli
+          command: sudo pip install awscli
+      # - run:
+      #     name: Run unit tests
+      #     command: 
+      # - run:
+      #     name: Build artifacts
+      #     command: 
+      # - run:
+      #     name: Zip artifacts and upload to AWS S3
+      #     command: 
+      # - run:
+      #     name: Call AWS CodeDeploy
+      #     command: 
+      # - run:
+      #     name: Validate Packer Template
+      #     command: ./packer validate -var-file=./ami-vars.json centos-ami.json
+      # - run:
+      #     name: Build AMI
+      #     command: |
+      #       ./packer build \
+      #       -var-file=./ami-vars.json \
+      #       centos-ami.json
+    branches:
+      only:
+        - assign7
