@@ -10,3 +10,14 @@
 #    - location: ./afterInstall.sh
 #      timeout: 180
 #      runas: centos
+
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/centos
+hooks:
+  AfterInstall:
+    - location: mkdir ~/success
+      timeout: 300
+      runas: centos

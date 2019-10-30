@@ -48,7 +48,8 @@ jobs:
           command: |
             mkdir artifacts
             cp target/demo-0.0.1-SNAPSHOT.jar artifacts
-            cp target/classes/application.properties artifacts  
+            cp target/classes/application.properties artifacts
+            cp ../appspec.yml
       
       # store raw contents of src code
       - store_artifacts:
