@@ -18,6 +18,6 @@ files:
     destination: /home/centos
 hooks:
   AfterInstall:
-    - location: mkdir ~/success
+    - location: afterInstall.sh
       timeout: 300
       runas: centos

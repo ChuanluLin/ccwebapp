@@ -50,6 +50,7 @@ jobs:
             cp target/demo-0.0.1-SNAPSHOT.jar artifacts
             cp target/classes/application.properties artifacts
             cp ../appspec.yml artifacts
+            cp ../infrastructure/aws/codedeploy/afterInstall.sh artifacts
       
       # store raw contents of src code
       - store_artifacts:
