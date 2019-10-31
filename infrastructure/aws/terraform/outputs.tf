@@ -45,3 +45,8 @@ output "aws_instance_dns" {
 output "aws_dynamodb_table_name" {
   value = "${aws_dynamodb_table.basic-dynamodb-table.name}"
 }
+
+output "aws_db_instance_endpoint" {
+  description = "The connection endpoint for RDS"
+  value       = "${aws_db_instance.default.endpoint}"
+}
