@@ -249,15 +249,16 @@ resource "aws_instance" "web" {
   # This EC2 instance must be created only after the RDS instance has been created.
   depends_on = [aws_db_instance.default]
 
-  user_data = << EOF
-      #! /bin/bash
-      echo export DB_ENDPOINT=${aws_db_instance.default.endpoint}>>~/.bashrc
-      echo export DB_USER=${aws_db_instance.default.username}>>~/.bashrc
-      echo export DB_PASSSWORD=${aws_db_instance.default.password}>>~/.bashrc
-      echo export AWS_ACCESS_KEY=AKIAYA2KW7ZMC4URIW63>>~/.bashrc
-      echo export AWS_SECRET_KEY=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>>~/.bashrc
-      echo export AWS_BUCKET_NAME=webapp.${var.domain_name}>>~/.bashrc
-    EOF
+  # user_data  = "${file("ec2_user_data.sh")}"
+  user_data = <<-EOF
+          #! /bin/bash
+          echo export DB_ENDPOINT=${aws_db_instance.default.endpoint}>>/etc/profile
+          echo export DB_USER=${aws_db_instance.default.username}>>/etc/profile
+          echo export DB_PASSSWORD='${aws_db_instance.default.password}'>>/etc/profile
+          echo export AWS_ACCESS_KEY=AKIAYA2KW7ZMC4URIW63>>/etc/profile
+          echo export AWS_SECRET_KEY=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>>/etc/profile
+          echo export AWS_BUCKET_NAME=webapp.${var.domain_name}>>/etc/profile
+  EOF
 
   tags = {
     Name       = "csye6225-ec2"
