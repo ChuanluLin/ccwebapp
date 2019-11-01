@@ -6,62 +6,9 @@ provider "aws" {
 
 data "aws_caller_identity" "current" { }
 
-# VPC
-resource "aws_vpc" "default" {
-  cidr_block           = "${var.vpc_cidr_block}"
-  enable_dns_hostnames = true
-  tags = {
-    Name = "vpc-${var.vpc_name}"
-  }
-}
-
-# DEFAULT INTERNET GATEWAY
-resource "aws_internet_gateway" "default" {
-  vpc_id = "${aws_vpc.default.id}"
-  
-  tags = {
-    Name = "igw-${var.vpc_name}"
-  }
-}
-
-# PUBLIC SUBNETS
-resource "aws_subnet" "public" {
-  vpc_id = "${aws_vpc.default.id}"
-
-  count                   = "${var.subnet_count}"
-  cidr_block              = "${element(list(var.subnet1_cidr_block, var.subnet2_cidr_block, var.subnet3_cidr_block), count.index)}"
-  availability_zone       = "${element(list(var.availability_zone1, var.availability_zone2, var.availability_zone3), count.index)}"
-  map_public_ip_on_launch = true
-
-  tags = {
-    Name               = "public${count.index}-${var.vpc_name}"
-  }
-}
-
-# PUBLIC SUBNETS - Default Route
-resource "aws_route_table" "public" {
-  vpc_id = "${aws_vpc.default.id}"
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = "${aws_internet_gateway.default.id}"
-  }
-
-  tags = {
-    Name = "publicrt-${var.vpc_name}"
-  }
-}
-
-# PUBLIC SUBNETS - Route associations
-resource "aws_route_table_association" "public" {
-  count          = "${var.subnet_count}"
-  subnet_id      = "${element(aws_subnet.public.*.id, count.index)}"
-  route_table_id = "${aws_route_table.public.id}"
-}
-
 # Securtiy Group - Application
 resource "aws_security_group" "application" {
-  vpc_id      = "${aws_vpc.default.id}"
+  vpc_id      = "${var.aws_vpc_id}"
 
   tags = {
     Name = "application"
@@ -108,7 +55,7 @@ resource "aws_security_group" "application" {
 
 # Securtiy Group - Databse
 resource "aws_security_group" "database" {
-  vpc_id      = "${aws_vpc.default.id}"
+  vpc_id      = "${var.aws_vpc_id}"
 
   tags = {
     Name = "database"
@@ -118,13 +65,6 @@ resource "aws_security_group" "database" {
   ingress {
     from_port   = 3306
     to_port     = 3306
-    protocol    = "tcp"
-    security_groups = ["${aws_security_group.application.id}"]
-  }
-
-  ingress {
-    from_port   = 5432
-    to_port     = 5432
     protocol    = "tcp"
     security_groups = ["${aws_security_group.application.id}"]
   }
@@ -155,19 +95,23 @@ resource "aws_s3_bucket" "webapp" {
   }
 
   lifecycle_rule {
-    id      = "archive"
+    id      = "log"
     enabled = true
 
-    prefix = "archive/"
+    prefix = "log/"
 
     tags = {
-      "rule"      = "archive"
+      "rule"      = "log"
       "autoclean" = "true"
     }
 
     transition {
       days          = 30
       storage_class = "STANDARD_IA"
+    }
+
+    expiration {
+      days = 90
     }
   }
 
@@ -184,7 +128,7 @@ resource "aws_s3_bucket" "webapp" {
 # RDS Subnet Group
 resource "aws_db_subnet_group" "default" {
   name       = "main"
-  subnet_ids = ["${aws_subnet.public.0.id}","${aws_subnet.public.1.id}","${aws_subnet.public.2.id}"]
+  subnet_ids = ["${var.subnet_id1}","${var.subnet_id2}","${var.subnet_id3}"]
 
   tags = {
     Name = "My DB subnet group"
@@ -196,7 +140,7 @@ resource "aws_db_instance" "default" {
   allocated_storage    = 20
   engine               = "mysql"
   engine_version       = "8.0.16"
-  instance_class       = "db.t2.medium"
+  instance_class       = "db.t2.micro"
   multi_az             = false
   identifier           = "csye6225-fall2019"
   username             = "dbuser"
@@ -234,7 +178,7 @@ resource "aws_instance" "web" {
   # Our Security group to allow HTTP and SSH access
   vpc_security_group_ids = ["${aws_security_group.application.id}"]
 
-  subnet_id = "${aws_subnet.public.0.id}"
+  subnet_id = "${var.subnet_id1}"
 
   ebs_block_device {
       device_name           = "/dev/sda1"  
@@ -248,6 +192,9 @@ resource "aws_instance" "web" {
 
   # This EC2 instance must be created only after the RDS instance has been created.
   depends_on = [aws_db_instance.default]
+
+  # IAM
+  iam_instance_profile = "${aws_iam_instance_profile.codedeployec2.name}"
 
   # user_data  = "${file("ec2_user_data.sh")}"
   user_data = <<-EOF
@@ -264,6 +211,11 @@ resource "aws_instance" "web" {
     Name       = "csye6225-ec2"
     Enironment = "${var.aws_profile}"
   }
+}
+
+resource "aws_iam_instance_profile" "codedeployec2" {
+  name = "CodeDeployEC2ServiceRoleProfile"
+  role = "${aws_iam_role.codedeployec2role.name}"
 }
 
 # DynamoDB Table
@@ -284,7 +236,7 @@ resource "aws_dynamodb_table" "basic-dynamodb-table" {
   }
 }
 
-# # S3 Bucket for CodeDeploy
+# S3 Bucket for CodeDeploy
 resource "aws_s3_bucket" "codedeploy" {
   bucket        = "codedeploy.${var.domain_name}"
   acl           = "private"
@@ -480,4 +432,86 @@ resource "aws_iam_user_policy_attachment" "attach2" {
 resource "aws_iam_user_policy_attachment" "attach3" {
   user       = "circleci"
   policy_arn = "${aws_iam_policy.policy3.arn}"
+}
+
+# IAM Role
+resource "aws_iam_role" "codedeployrole" {
+  name        = "CodeDeployServiceRole"
+  description = "Allows CodeDeploy to call AWS services such as Auto Scalling on your behalf."
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "codedeploy.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+}
+
+# IAM Role Policy Attachment
+resource "aws_iam_role_policy_attachment" "AWSCodeDeployRole" {
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
+  role       = "${aws_iam_role.codedeployrole.name}"
+}
+
+# CodeDeploy Applcation
+resource "aws_codedeploy_app" "default" {
+  compute_platform = "Server"
+  name = "csye6225-webapp"
+}
+
+# CodeDeploy Deployment Group
+resource "aws_codedeploy_deployment_group" "default" {
+  app_name              = "${aws_codedeploy_app.default.name}"
+  deployment_group_name = "csye6225-webapp-deployment"
+  service_role_arn      = "${aws_iam_role.codedeployrole.arn}"
+
+  ec2_tag_set {
+    ec2_tag_filter {
+      key   = "Name"
+      type  = "KEY_AND_VALUE"
+      value = "csye6225-ec2"
+    }
+  }
+
+  auto_rollback_configuration {
+    enabled = true
+    events  = ["DEPLOYMENT_FAILURE"]
+  }
+}
+
+# IAM Role
+resource "aws_iam_role" "codedeployec2role" {
+  name        = "CodeDeployEC2ServiceRole"
+  description = "Allows EC2 instances to call AWS services on your behalf."
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+
+# IAM Role Policy Attachment
+resource "aws_iam_role_policy_attachment" "attach4" {
+  policy_arn = "${aws_iam_policy.policy4.arn}"
+  role       = "${aws_iam_role.codedeployec2role.name}"
 }

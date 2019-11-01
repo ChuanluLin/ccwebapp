@@ -10,6 +10,6 @@ vpc_cidr_block = "10.0.0.0/16"
 vpc_name = "dev"
 
 domain_name = "tianlifeng.me"
-ami_id = "ami-0b76b1916d9954807"
+ami_id = "ami-032cb9c72f3f6694b"
 key_name = "key"
 public_key_path = "~/.ssh/id_rsa.pub"
