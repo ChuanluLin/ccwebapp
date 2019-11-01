@@ -6,7 +6,8 @@
 
 # sudo chown tomcat:tomcat /opt/tomcat/webapps/ROOT.war
 
-java -jar ~/demo-0.0.1-SNAPSHOT.jar &
+ps aux | grep demo | xargs kill -9
+nohup java -jar ~/demo-0.0.1-SNAPSHOT.jar &
 
 # cleanup log files
 # sudo rm -rf /opt/tomcat/logs/catalina*

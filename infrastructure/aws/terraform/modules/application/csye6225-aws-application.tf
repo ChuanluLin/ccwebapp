@@ -205,6 +205,7 @@ resource "aws_instance" "web" {
           echo export AWS_ACCESS_KEY=AKIAYA2KW7ZMC4URIW63>>/etc/profile
           echo export AWS_SECRET_KEY=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>>/etc/profile
           echo export AWS_BUCKET_NAME=webapp.${var.domain_name}>>/etc/profile
+          echo export TOMCAT_LOG_DIR=/home/centos>>/etc/profile
   EOF
 
   tags = {
