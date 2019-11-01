@@ -15,4 +15,4 @@ rm -rf /home/centos/access_log.log
 
 # start application
 nohup java -jar ~/demo-0.0.1-SNAPSHOT.jar >spring.log 2>&1 &
-echo -e '\n'
+disown
