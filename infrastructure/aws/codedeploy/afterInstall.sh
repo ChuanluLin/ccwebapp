@@ -14,4 +14,5 @@ rm -rf /home/centos/spring.log
 rm -rf /home/centos/access_log.log
 
 # start application
+source /etc/profile
 nohup java -jar ~/demo-0.0.1-SNAPSHOT.jar >~/spring.log 2>&1 &
