@@ -9,8 +9,8 @@ subnet3_cidr_block = "10.0.3.0/24"
 vpc_cidr_block = "10.0.0.0/16"
 vpc_name = "prod"
 
-domain_name = "******.me"
-ami_id = "ami-*********"
+domain_name = "*.me"
+ami_id = "ami-*************"
 key_name = "key"
 public_key_path = "~/.ssh/id_rsa.pub"
 
