@@ -202,10 +202,10 @@ resource "aws_instance" "web" {
           echo export DB_ENDPOINT=${aws_db_instance.default.endpoint}>>/etc/profile
           echo export DB_USER=${aws_db_instance.default.username}>>/etc/profile
           echo export DB_PASSSWORD='${aws_db_instance.default.password}'>>/etc/profile
-          echo export AWS_ACCESS_KEY=AKIAYA2KW7ZMC4URIW63>>/etc/profile
-          echo export AWS_SECRET_KEY=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>>/etc/profile
+          echo export AWS_ACCESS_KEY=${var.aws_access_key}>>/etc/profile
+          echo export AWS_SECRET_KEY=${var.aws_secret_key}>>/etc/profile
           echo export AWS_BUCKET_NAME=webapp.${var.domain_name}>>/etc/profile
-          echo export TOMCAT_LOG_DIR=/home/centos>>/etc/profile
+          echo export TOMCAT_LOG_DIR=${var.tomcat_log_dir}>>/etc/profile
   EOF
 
   tags = {
