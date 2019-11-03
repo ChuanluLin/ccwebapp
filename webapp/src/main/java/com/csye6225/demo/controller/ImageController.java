@@ -20,6 +20,7 @@ import com.csye6225.demo.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -41,10 +42,13 @@ public class ImageController {
     @Autowired
     private UserRepository userRepository;
 
+    @Value("${aws.access.key}")
+    private String AWS_ACCESS_KEY;
+    @Value("${aws.secret.key}")
+    private String AWS_SECRET_KEY;
+    @Value("${aws.bucketname}")
+    private String bucketName;
     AmazonS3 s3;
-    String AWS_ACCESS_KEY = "";
-    String AWS_SECRET_KEY = "";
-    String bucketName = "webapp.******.me";
 
     @PostMapping(path = "/v1/recipe/{id}/image", produces = "application/json")
     @ResponseBody
