@@ -69,3 +69,16 @@ variable "key_name" {
 variable "ami_id" {
   description = "The Amazon Machine Image ID for launching the EC2 instance"
 }
+
+
+variable "aws_access_key"{
+  description = "The aws_access_key of circleci" 
+}
+
+variable "aws_secret_key"{
+  description = "The aws_secret_key of circleci" 
+}
+
+variable "tomcat_log_dir"{
+  description = "The log file's directory" 
+}
