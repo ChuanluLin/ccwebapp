@@ -69,3 +69,15 @@ variable "key_name" {
 variable "ami_id" {
   description = "The Amazon Machine Image ID for launching the EC2 instance"
 }
+
+variable "aws_access_key" {
+  description = "The AWS Access Key of the user who has got webapp S3 bucket access"
+}
+
+variable "aws_secret_key" {
+  description = "The AWS Secret Key of the user who has got webapp S3 bucket access"
+}
+
+variable "tomcat_log_dir" {
+  description = "The directory for Tomcat access log created in EC2 instance"
+}
