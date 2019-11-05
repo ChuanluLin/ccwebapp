@@ -2,7 +2,82 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/openjdk:8-jdk
+      - image: circleci/openjdk:11.0.5-stretch
+    
+    working_directory: ~/ccwebapp/webapp
+    
     steps:
-      - checkout
+      - checkout:
+          path: ~/ccwebapp
+
+      - run:
+          name: Install packages
+          command: sudo apt-get update && sudo apt-get install wget zip unzip -y
+      - run:
+          name: Install python3-pip
+          command: |
+            sudo apt install python3
+            curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+            sudo python3 get-pip.py
+      - run:
+          name: Install awscli
+          command: sudo pip install awscli
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - ccwebapp-{{ checksum "pom.xml" }}
+
+      - run: mvn dependency:go-offline
+
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: ccwebapp-{{ checksum "pom.xml" }}
+
+      # - run:
+      #     name: Run unit tests
+      #     command: 
+
+      - run:
+          name: Build artifacts (package into a jar)
+          command: mvn clean package  -Dmaven.test.skip=true
       
+      - run:
+          name: Collect artifacts
+          command: |
+            mkdir artifacts
+            cp target/demo-0.0.1-SNAPSHOT.jar artifacts
+            cp ../appspec.yml artifacts
+            cp ../infrastructure/aws/codedeploy/afterInstall.sh artifacts
+      
+      # store raw contents of src code
+      - store_artifacts:
+          path: artifacts
+          destination: ccwebapp
+
+      - run:
+          name: Zip artifacts
+          command: zip -j artifacts/artifacts.zip artifacts/*.*  
+      - run:
+          name: Upload to AWS S3
+          command: aws s3 cp artifacts/artifacts.zip s3://codedeploy.zerolin.me --sse aws:kms
+
+      - run:
+          name: Call AWS CodeDeploy
+          command: |
+            aws deploy register-application-revision \
+            --application-name ${APPLICATION_NAME} \
+            --description Description \
+            --s3-location bucket=codedeploy.zerolin.me,key=artifacts.zip,bundleType=zip
+
+            aws deploy create-deployment \
+            --application-name ${APPLICATION_NAME} \
+            --deployment-config-name  CodeDeployDefault.AllAtOnce \
+            --deployment-group-name csye6225-webapp-deployment \
+            --s3-location bucket=codedeploy.zerolin.me,key=artifacts.zip,bundleType=zip \
+            --description "Deployed via CircleCI on $(date "+%Y-%m-%d %H:%M:%S %z")"
+
+    branches:
+      only:
+        - assign7
