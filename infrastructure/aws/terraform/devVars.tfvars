@@ -15,5 +15,5 @@ key_name = "dev_key"
 public_key_path = "/home/shangrui/Desktop/dev_key/dev_key.pub"
 
 aws_access_key = "AKIAWWNJIPHBBBYZ364I"
-aws_secret_key = "0BziIv7MyaBAwoU4KdS+A4iCSMLYNW5w+RtDWH4m/9B"
+aws_secret_key = "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"
 tomcat_log_dir = "/home/centos"
