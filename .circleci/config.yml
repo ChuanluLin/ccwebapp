@@ -22,6 +22,14 @@ jobs:
       - run:
           name: Install awscli
           command: sudo pip install awscli
+      - run:
+          name: Install RPM
+          command: sudo yum install rpm
+      - run:
+          name: Install CloudWatch
+          command: |
+            sudo wget https://s3.amazonaws.com/amazoncloudwatch-agent/centos/amd64/latest/amazon-cloudwatch-agent.rpm
+            sudo rpm -U ./amazon-cloudwatch-agent.rpm
 
       # Download and cache dependencies
       - restore_cache:
@@ -81,7 +89,7 @@ jobs:
           name: Start CloudWatch
           command: |
             sudo cp ../infrastructure/aws/codedeploy/cloudwatch-config.json /home/centos 
-            sudo ./opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+            sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
               -a fetch-config \
               -m ec2 \
               -c file:/home/centos/cloudwatch-config.json \
