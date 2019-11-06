@@ -3,6 +3,7 @@ import com.csye6225.demo.exception.DataValidationException;
 import com.csye6225.demo.pojo.User;
 import com.csye6225.demo.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.timgroup.statsd.StatsDClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +23,17 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+    private final StatsDClient statsd;
+
+    @Autowired
+    public UserController(StatsDClient statsd) {
+        this.statsd = statsd;
+    }
+
     @RequestMapping(path = "/v1/user", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> create(@RequestBody String userJSON, HttpServletResponse response) throws IOException {
+        statsd.incrementCounter("Post /v1/user");
         ObjectMapper mapper = new ObjectMapper();
         HashMap userMap = mapper.readValue(userJSON, HashMap.class);
 
@@ -71,6 +80,7 @@ public class UserController {
     @RequestMapping(path = "/v1/user/self", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> update(@RequestBody String userJSON, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        statsd.incrementCounter("PUT /v1/user/self");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByEmail(auth.getName());
         ObjectMapper mapper = new ObjectMapper();
@@ -107,6 +117,7 @@ public class UserController {
     @RequestMapping(path = "/v1/user/self", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> GET(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        statsd.incrementCounter("GET /v1/user/self");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByEmail(auth.getName());
 
