@@ -18,6 +18,7 @@ import com.csye6225.demo.pojo.Recipe;
 import com.csye6225.demo.repository.RecipeRepository;
 import com.csye6225.demo.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.timgroup.statsd.StatsDClient;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,6 +50,16 @@ public class ImageController {
     @Value("${aws.bucketname}")
     private String bucketName;
     AmazonS3 s3;
+<<<<<<< HEAD
+
+    private final StatsDClient statsd;
+
+    @Autowired
+    public ImageController(StatsDClient statsd) {
+        this.statsd = statsd;
+    }
+=======
+>>>>>>> chuanlu/ASS7
 
     @PostMapping(path = "/v1/recipe/{id}/image", produces = "application/json")
     @ResponseBody
