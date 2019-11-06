@@ -50,7 +50,6 @@ public class ImageController {
     @Value("${aws.bucketname}")
     private String bucketName;
     AmazonS3 s3;
-<<<<<<< HEAD
 
     private final StatsDClient statsd;
 
@@ -58,8 +57,6 @@ public class ImageController {
     public ImageController(StatsDClient statsd) {
         this.statsd = statsd;
     }
-=======
->>>>>>> chuanlu/ASS7
 
     @PostMapping(path = "/v1/recipe/{id}/image", produces = "application/json")
     @ResponseBody
