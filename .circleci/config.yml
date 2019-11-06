@@ -86,7 +86,6 @@ jobs:
               -m ec2 \
               -c file:/home/centos/cloudwatch-config.json \
               -s
-
     branches:
       only:
         - Assignment7
