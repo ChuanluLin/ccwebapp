@@ -80,7 +80,7 @@ jobs:
       - run:
           name: Start CloudWatch
           command: |
-            cp ../infrastructure/aws/codedeploy/cloudwatch-config.json /home/centos
+            sudo cp ../infrastructure/aws/codedeploy/cloudwatch-config.json /home/centos
             sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
               -a fetch-config \
               -m ec2 \
