@@ -24,7 +24,7 @@ jobs:
           command: sudo pip install awscli
       - run:
           name: Install RPM
-          command: sudo yum install rpm
+          command: sudo pip install rpm
       - run:
           name: Install CloudWatch
           command: |
