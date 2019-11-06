@@ -62,7 +62,7 @@ jobs:
           command: zip -j artifacts/artifacts.zip artifacts/*.*  
       - run:
           name: Upload to AWS S3
-          command: aws s3 cp artifacts/artifacts_$(date "+%Y-%m-%d %H:%M:%S %z")".zip s3://codedeploy.${DOMAIN_NAME} --sse aws:kms
+          command: aws s3 cp artifacts/artifacts_$(date "+%Y-%m-%d %H:%M:%S %z").zip s3://codedeploy.${DOMAIN_NAME} --sse aws:kms
 
       - run:
           name: Call AWS CodeDeploy
