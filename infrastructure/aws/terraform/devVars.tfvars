@@ -10,7 +10,7 @@ vpc_cidr_block = "10.0.0.0/16"
 vpc_name = "dev"
 
 domain_name = "syriii.me"
-ami_id = "ami-0df4c47855b6465d2"
+ami_id = "ami-0a5734d775d2ce12f"
 key_name = "dev_key"
 public_key_path = "/home/shangrui/Desktop/dev_key/dev_key.pub"
 

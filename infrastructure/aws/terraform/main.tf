@@ -32,12 +32,12 @@ module "app"{
   key_name = "${var.key_name}"
   public_key_path = "${var.public_key_path}"
 
-  aws_access_key = "${var.aws_access_key}"
-  aws_secret_key = "${var.aws_secret_key}"
-  tomcat_log_dir = "${var.tomcat_log_dir}"
 
   aws_vpc_id = module.vpc.vpc_id
   subnet_id1 = module.vpc.public_subnets_id1
   subnet_id2 = module.vpc.public_subnets_id2
   subnet_id3 = module.vpc.public_subnets_id3
+  aws_access_key = "${var.aws_access_key}"
+  aws_secret_key = "${var.aws_secret_key}"
+  tomcat_log_dir = "${var.tomcat_log_dir}"
 }

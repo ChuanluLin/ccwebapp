@@ -130,5 +130,3 @@ public class UserController {
         return password.matches("^(?=.*\\d)(?=.*[a-zA-Z])(?=.*[\\W])[\\da-zA-Z\\W]{8,}$");
     }
 }
-
-
