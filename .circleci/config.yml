@@ -75,4 +75,4 @@ jobs:
             --description "Deployed via CircleCI on $(date "+%Y-%m-%d %H:%M:%S %z")"
     branches:
       only:
-        - assign7
+        - ASS7
