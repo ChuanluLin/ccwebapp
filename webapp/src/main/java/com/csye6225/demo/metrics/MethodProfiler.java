@@ -40,7 +40,7 @@ public class MethodProfiler {
         statsd.incrementCounter(key);
 
         // print log
-        logger.info(key);
+        logger.info("call: "+key);
 
         // return the recorded result
         return output;
