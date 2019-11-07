@@ -73,5 +73,5 @@ jobs:
             --deployment-group-name csye6225-webapp-deployment \
             --s3-location bucket=codedeploy.${DOMAIN_NAME},key=artifacts.zip,bundleType=zip \
             --description "Deployed via CircleCI on $(date "+%Y-%m-%d %H:%M:%S %z")"
-    branches：
-      ignore：
+    branches:
+      ignore:
