@@ -5,6 +5,10 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.logging.LogManager;
 
 @Aspect
 public class MethodProfiler {
@@ -14,6 +18,8 @@ public class MethodProfiler {
     public MethodProfiler(StatsDClient statsd) {
         this.statsd = statsd;
     }
+
+    private static final Logger logger = LoggerFactory.getLogger(MethodProfiler.class);
 
     @Pointcut("execution(* com.csye6225.demo.controller.*.*(..)) || execution(* com.csye6225.demo.repository.*.*(..))")
     public void restServiceMethods() {
@@ -32,6 +38,9 @@ public class MethodProfiler {
         statsd.recordExecutionTime(key, endTime-startTime);
         // send the count to statsd
         statsd.incrementCounter(key);
+
+        // print log
+        logger.info("call: "+key);
 
         // return the recorded result
         return output;

@@ -10,7 +10,12 @@
                     {
                         "file_path": "/home/centos/access_log.log",
                         "log_group_name": "csye6225_fall2019",
-                        "log_stream_name": "webapp"
+                        "log_stream_name": "webapp Tomcat log"
+                    },
+                    {
+                        "file_path": "/home/centos/spring.log",
+                        "log_group_name": "csye6225_fall2019",
+                        "log_stream_name": "webapp Spring log"
                     }
                 ]
             }
