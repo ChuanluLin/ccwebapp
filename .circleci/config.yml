@@ -59,7 +59,7 @@ jobs:
 
       - run:
           name: Zip artifacts
-          command: zip -j artifacts/artifacts_{{ .BuildNum }}.zip artifacts/*.*  
+          command: zip -j artifacts/artifacts.zip artifacts/*.*  
       - run:
           name: Upload to AWS S3
           command: aws s3 cp artifacts/artifacts.zip s3://codedeploy.${DOMAIN_NAME} --sse aws:kms

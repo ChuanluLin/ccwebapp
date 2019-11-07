@@ -14,6 +14,6 @@ ami_id = "ami-0c097acf78b90ee5c"
 key_name = "dev_key"
 public_key_path = "/home/shangrui/Desktop/dev_key/dev_key.pub"
 
-aws_access_key = "AKIAWWNJIPHBBBYZ364I"
-aws_secret_key = "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"
+aws_access_key = "AKIAWWNJIPHBGA5N4WAU"
+aws_secret_key = "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"
 tomcat_log_dir = "/home/centos"
