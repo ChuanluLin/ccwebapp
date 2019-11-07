@@ -35,13 +35,9 @@ jobs:
             - ~/.m2
           key: ccwebapp-{{ checksum "pom.xml" }}
 
-      # - run:
-      #     name: Run unit tests
-      #     command: 
-
       - run:
           name: Build artifacts (package into a jar)
-          command: mvn clean package  -Dmaven.test.skip=true
+          command: mvn clean package
       
       - run:
           name: Collect artifacts
@@ -50,6 +46,7 @@ jobs:
             cp target/demo-0.0.1-SNAPSHOT.jar artifacts
             cp ../appspec.yml artifacts
             cp ../infrastructure/aws/codedeploy/afterInstall.sh artifacts
+            cp ../infrastructure/aws/codedeploy/cloudwatch-config.json artifacts
       
       # store raw contents of src code
       - store_artifacts:
@@ -58,10 +55,10 @@ jobs:
 
       - run:
           name: Zip artifacts
-          command: zip -j artifacts/artifacts.zip artifacts/*.*  
+          command: zip -j artifacts/artifacts_${CIRCLE_SHA1}.zip artifacts/*.*  
       - run:
           name: Upload to AWS S3
-          command: aws s3 cp artifacts/artifacts.zip s3://codedeploy.${DOMAIN_NAME} --sse aws:kms
+          command: aws s3 cp artifacts/artifacts_${CIRCLE_SHA1}.zip s3://codedeploy.${DOMAIN_NAME} --sse aws:kms
 
       - run:
           name: Call AWS CodeDeploy
@@ -70,14 +67,12 @@ jobs:
             --application-name ${APPLICATION_NAME} \
             --description Description \
             --s3-location bucket=codedeploy.${DOMAIN_NAME},key=artifacts.zip,bundleType=zip
-
             aws deploy create-deployment \
             --application-name ${APPLICATION_NAME} \
             --deployment-config-name  CodeDeployDefault.AllAtOnce \
             --deployment-group-name csye6225-webapp-deployment \
             --s3-location bucket=codedeploy.${DOMAIN_NAME},key=artifacts.zip,bundleType=zip \
             --description "Deployed via CircleCI on $(date "+%Y-%m-%d %H:%M:%S %z")"
-
     branches:
       only:
         - ASS7

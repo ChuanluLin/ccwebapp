@@ -18,6 +18,7 @@ import com.csye6225.demo.pojo.Recipe;
 import com.csye6225.demo.repository.RecipeRepository;
 import com.csye6225.demo.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.timgroup.statsd.StatsDClient;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,6 +51,13 @@ public class ImageController {
     private String bucketName;
     AmazonS3 s3;
 
+    private final StatsDClient statsd;
+
+    @Autowired
+    public ImageController(StatsDClient statsd) {
+        this.statsd = statsd;
+    }
+
     @PostMapping(path = "/v1/recipe/{id}/image", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file, @PathVariable("id") String id, HttpServletResponse response) throws IOException, JSONException {
@@ -67,7 +75,11 @@ public class ImageController {
         s3.setRegion(Region.getRegion(Regions.US_EAST_1));
         //exist image
         if(newRecipe.getImage() != null){
+            statsd.incrementCounter("ACCESS S3 to DELETE");
+            long startTime = System.currentTimeMillis();
             s3.deleteObject(bucketName, "upload/"+newRecipe.getImage().getFilename());
+            long endTime = System.currentTimeMillis();
+            statsd.recordExecutionTime("ExecutionTime for Deleting", endTime-startTime);
             newRecipe.setImage(null);
         }
         String uuid = UUID.randomUUID().toString().replaceAll("-","");
@@ -86,6 +98,8 @@ public class ImageController {
             newImage.setFilename(newName);
             File uploadFile = convertFile(file);
             PutObjectRequest putObjectRequest = new PutObjectRequest(bucketPath, newName, uploadFile);
+            statsd.incrementCounter("ACCESS S3 to UPLOAD");
+            long startTime = System.currentTimeMillis();
             s3.putObject(putObjectRequest);
 //            GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest(bucketName, FileName);
 //            URL url = s3.generatePresignedUrl(urlRequest);
@@ -93,6 +107,8 @@ public class ImageController {
 
             //get metadata
             ObjectMetadata metadata = s3.getObjectMetadata(bucketName, "upload/" + newName);
+            long endTime = System.currentTimeMillis();
+            statsd.recordExecutionTime("ExecutionTime for Uploading", endTime-startTime);
 //            System.out.println(metadata.getRawMetadata());
             newImage.setAccept_ranges(metadata.getRawMetadataValue("Accept-Ranges").toString());
             newImage.setContent_length(String.valueOf(metadata.getContentLength()));
@@ -130,7 +146,11 @@ public class ImageController {
         String filename = newImage.getFilename();
         s3 = new AmazonS3Client(new BasicAWSCredentials(AWS_ACCESS_KEY, AWS_SECRET_KEY));
         s3.setRegion(Region.getRegion(Regions.US_EAST_1));
+        statsd.incrementCounter("ACCESS S3 to DELETE");
+        long startTime = System.currentTimeMillis();
         s3.deleteObject(bucketName, "upload/"+filename);
+        long endTime = System.currentTimeMillis();
+        statsd.recordExecutionTime("ExecutionTime for deleting", endTime-startTime);
 
 //        newImage.setFilename("");
 //        newImage.setUrl("");

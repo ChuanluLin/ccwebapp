@@ -63,5 +63,28 @@ nohup java -jar target/demo-0.0.1-SNAPSHOT.jar
 
 
 ## CI/CD
+For circle ci, things are stored in ./.cricleci/config.yml. The packaged jar file will store in S3 bucket.
+The service and depolyment are stored in ./infrastructure/aws/codedeploy/afterinstall.sh
 
+To trigger API without commit
+```
+curl -d 'build_parameters[CIRCLE_JOB]=build' 'https://circleci.com/api/v1.1/project/github/<username>/<project_name>/tree/<branch>?circle-token=<token>'
+```
+
+For ami you have to set following Environment Variables
+```
+AWS_ACCESS_KEY
+AWS_REGION
+AWS_SECRET_KEY
+SUBNET_ID
+```
+
+For webapp you have to set following Environment Variables
+```
+APPLICATION_NAME = csye6225-webapp
+AWS_ACCESS_KEY
+AWS_DEFAULT_REGION
+AWS_SECRET_ACCESS
+DOMAIN_NAME
+```
 

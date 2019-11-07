@@ -3,6 +3,7 @@ import com.csye6225.demo.exception.DataValidationException;
 import com.csye6225.demo.pojo.User;
 import com.csye6225.demo.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.timgroup.statsd.StatsDClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,13 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+    private final StatsDClient statsd;
+
+    @Autowired
+    public UserController(StatsDClient statsd) {
+        this.statsd = statsd;
+    }
 
     @RequestMapping(path = "/v1/user", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     @ResponseBody
@@ -130,5 +138,3 @@ public class UserController {
         return password.matches("^(?=.*\\d)(?=.*[a-zA-Z])(?=.*[\\W])[\\da-zA-Z\\W]{8,}$");
     }
 }
-
-

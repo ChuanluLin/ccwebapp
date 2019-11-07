@@ -516,3 +516,10 @@ resource "aws_iam_role_policy_attachment" "attach4" {
   policy_arn = "${aws_iam_policy.policy4.arn}"
   role       = "${aws_iam_role.codedeployec2role.name}"
 }
+
+#
+# IAM Role Policy Attachment
+resource "aws_iam_role_policy_attachment" "attachCloudWatch" {
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+  role       = "${aws_iam_role.codedeployec2role.name}"
+}

@@ -10,10 +10,10 @@ vpc_cidr_block = "10.0.0.0/16"
 vpc_name = "prod"
 
 domain_name = "zerolin.me"
-ami_id = "ami-09e554f252614eea4"
+ami_id = "ami-0764ce2c63991aa14"
 key_name = "key"
 public_key_path = "~/.ssh/id_rsa.pub"
 
-aws_access_key = "AKIAVX7A3FHLJP2LMVGJ"
-aws_secret_key = "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"
+aws_access_key = "AKIAVX7A3FHLH4P42PYA"
+aws_secret_key = "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"
 tomcat_log_dir = "/home/centos"
