@@ -71,14 +71,12 @@ jobs:
             --application-name ${APPLICATION_NAME} \
             --description Description \
             --s3-location bucket=codedeploy.${DOMAIN_NAME},key=artifacts.zip,bundleType=zip
-
             aws deploy create-deployment \
             --application-name ${APPLICATION_NAME} \
             --deployment-config-name  CodeDeployDefault.AllAtOnce \
             --deployment-group-name csye6225-webapp-deployment \
             --s3-location bucket=codedeploy.${DOMAIN_NAME},key=artifacts.zip,bundleType=zip \
             --description "Deployed via CircleCI on $(date "+%Y-%m-%d %H:%M:%S %z")"
-
     branches:
       only:
-        - ASS7
+        - Assignment7

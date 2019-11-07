@@ -55,6 +55,10 @@ ami_id = "ami-*************"
 key_name = "key"
 public_key_path = "~/key.pub"
 
+aws_access_key = "*********"
+aws_secret_key = "************"
+tomcat_log_dir = "/home/centos"
+
 ```
 
 If you havn't yet created an ssh key, it can be done with the following command:
