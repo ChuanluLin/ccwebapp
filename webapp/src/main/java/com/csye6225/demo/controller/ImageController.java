@@ -43,11 +43,11 @@ public class ImageController {
     @Autowired
     private UserRepository userRepository;
 
-    @Value("${aws.access.key}")
+    @Value("${aws.access.key:}")
     private String AWS_ACCESS_KEY;
-    @Value("${aws.secret.key}")
+    @Value("${aws.secret.key:}")
     private String AWS_SECRET_KEY;
-    @Value("${aws.bucketname}")
+    @Value("${aws.bucketname:}")
     private String bucketName;
     AmazonS3 s3;
 
