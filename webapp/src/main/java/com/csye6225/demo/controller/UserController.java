@@ -33,7 +33,6 @@ public class UserController {
     @RequestMapping(path = "/v1/user", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> create(@RequestBody String userJSON, HttpServletResponse response) throws IOException {
-        statsd.incrementCounter("Post /v1/user");
         ObjectMapper mapper = new ObjectMapper();
         HashMap userMap = mapper.readValue(userJSON, HashMap.class);
 
@@ -80,7 +79,6 @@ public class UserController {
     @RequestMapping(path = "/v1/user/self", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> update(@RequestBody String userJSON, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        statsd.incrementCounter("PUT /v1/user/self");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByEmail(auth.getName());
         ObjectMapper mapper = new ObjectMapper();
@@ -117,7 +115,6 @@ public class UserController {
     @RequestMapping(path = "/v1/user/self", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> GET(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        statsd.incrementCounter("GET /v1/user/self");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByEmail(auth.getName());
 

@@ -6,6 +6,7 @@ import com.csye6225.demo.repository.RecipeRepository;
 import com.csye6225.demo.repository.UserRepository;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.timgroup.statsd.StatsDClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,6 +30,13 @@ public class RecipeController {
 
     @Autowired
     private UserRepository userRepository;
+
+    private final StatsDClient statsd;
+
+    @Autowired
+    public RecipeController(StatsDClient statsd) {
+        this.statsd = statsd;
+    }
 
     @PostMapping(path = "/v1/recipe/", consumes = "application/json", produces = "application/json")
     @ResponseBody
