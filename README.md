@@ -63,6 +63,9 @@ nohup java -jar target/demo-0.0.1-SNAPSHOT.jar
 
 
 ## CI/CD
+For circle ci, things are stored in ./.cricleci/config.yml. The packaged jar file will store in S3 bucket.
+The service and depolyment are stored in ./infrastructure/aws/codedeploy/afterinstall.sh
+
 To trigger API without commit
 ```
 curl -d 'build_parameters[CIRCLE_JOB]=build' 'https://circleci.com/api/v1.1/project/github/<username>/<project_name>/tree/<branch>?circle-token=<token>'
