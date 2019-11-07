@@ -5,8 +5,10 @@ import com.csye6225.demo.pojo.User;
 import com.csye6225.demo.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -25,6 +27,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@FixMethodOrder(MethodSorters.JVM)
 public class RecipeControllerTest {
     @Autowired
     private WebApplicationContext wac;
@@ -37,7 +40,7 @@ public class RecipeControllerTest {
     private static boolean initialized = false;
 
     @Before
-    public void setup(){
+    public void setup() throws Exception{
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
 
         if (!initialized) {
@@ -53,13 +56,14 @@ public class RecipeControllerTest {
             test_user.setFirst_name("Chuanlu");
             test_user.setLast_name("Lin");
             userRepository.save(test_user);
+            recipeCreate();
             // finish initialization
             initialized = true;
         }
     }
 
     @Test
-    public void createRecipe() throws Exception {
+    public void recipeCreate() throws Exception {
         Authentication authToken = new TestingAuthenticationToken("test@email.com", null);
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
@@ -68,7 +72,7 @@ public class RecipeControllerTest {
                 "  \"cook_time_in_min\": 15,\n" +
                 "  \"prep_time_in_min\": 15,\n" +
                 "  \"title\": \"Kung Pao Chicken\",\n" +
-                "  \"cusine\": \"Italian\",\n" +
+                "  \"cuisine\": \"Italian\",\n" +
                 "  \"servings\": 2,\n" +
                 "  \"ingredients\": [\n" +
                 "    \"4 ounces linguine pasta\",\n" +
@@ -93,7 +97,7 @@ public class RecipeControllerTest {
                 "    \"carbohydrates_in_grams\": 53.7,\n" +
                 "    \"protein_in_grams\": 53.7\n" +
                 "  }\n" +
-                "}";
+                "}\n";
 
         ResultActions resultActions =
             mockMvc.perform(MockMvcRequestBuilders.post("/v1/recipe/")
@@ -102,24 +106,24 @@ public class RecipeControllerTest {
                 .content(json))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 //the root element of the query，for example, $.length() represents the whole returned document
-                .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value("13"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.author_id").value(test_user.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value("14"))
+                //.andExpect(MockMvcResultMatchers.jsonPath("$.author_id").value(test_user.getId()))
                 .andDo(MockMvcResultHandlers.print()); // print out the http response info
 
         // get response json
         MvcResult result = resultActions.andReturn();
         String contentAsString = result.getResponse().getContentAsString();
         // parse json to object
-        Recipe createdRecipe = objectMapper.readValue(contentAsString, Recipe.class);
+        createdRecipe = objectMapper.readValue(contentAsString, Recipe.class);
     }
 
     @Test
-    public void recipeGET() throws Exception {
+    public void recipeGet() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/recipe/"+createdRecipe.getId())
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 //the root element of the query，for example, $.length() represents the whole returned document
-                .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value("13"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value("14"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("Kung Pao Chicken"))
                 .andDo(MockMvcResultHandlers.print()); // print out the http response info
     }
@@ -167,13 +171,13 @@ public class RecipeControllerTest {
                         .content(json))
                         .andExpect(MockMvcResultMatchers.status().isOk())
                         //the root element of the query，for example, $.length() represents the whole returned document
-                        .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value("13"))
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value("14"))
                         .andExpect(MockMvcResultMatchers.jsonPath("$.cusine").value("Chinese"))
                         .andDo(MockMvcResultHandlers.print()); // print out the http response info
     }
 
     @Test
-    public void recipeZDelete() throws Exception {
+    public void recipeDelete() throws Exception {
         Authentication authToken = new TestingAuthenticationToken("test@email.com", null);
         SecurityContextHolder.getContext().setAuthentication(authToken);
         System.out.println("principal:"+ SecurityContextHolder.getContext().getAuthentication().getPrincipal());

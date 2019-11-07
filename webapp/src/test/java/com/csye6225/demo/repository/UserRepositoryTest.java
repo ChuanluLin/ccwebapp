@@ -19,6 +19,11 @@ public class UserRepositoryTest {
 
     @Test
     public void findByEmail() {
+        // remove potential User in database
+        User user = userRepository.findByEmail("test@email.com");
+        if (user != null) {
+            userRepository.delete(user);
+        }
         String email = "test@email.com";
         String first_name = "John";
         User user_create = new User();

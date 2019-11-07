@@ -35,13 +35,9 @@ jobs:
             - ~/.m2
           key: ccwebapp-{{ checksum "pom.xml" }}
 
-      # - run:
-      #     name: Run unit tests
-      #     command: 
-
       - run:
           name: Build artifacts (package into a jar)
-          command: mvn clean package  -Dmaven.test.skip=true
+          command: mvn clean package
       
       - run:
           name: Collect artifacts
