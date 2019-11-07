@@ -19,7 +19,7 @@ public class MethodProfiler {
         this.statsd = statsd;
     }
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(MethodProfiler.class);
 
     @Pointcut("execution(* com.csye6225.demo.controller.*.*(..)) || execution(* com.csye6225.demo.repository.*.*(..))")
     public void restServiceMethods() {
