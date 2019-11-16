@@ -12,4 +12,6 @@ public interface RecipeRepository extends CrudRepository<Recipe, Integer> {
 
     @Query("select u from Recipe u order by u.created_ts")
     List<Recipe> findInOrders();
+
+    public List<Recipe> findByAuthor_id(String author_id);
 }
