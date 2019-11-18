@@ -9,12 +9,11 @@ subnet3_cidr_block = "10.0.3.0/24"
 vpc_cidr_block = "10.0.0.0/16"
 vpc_name = "prod"
 
+domain_name = "zerolin.me"
+ami_id = "ami-0ba00d524b4c8651f"
+key_name = "key"
+public_key_path = "~/.ssh/id_rsa.pub"
 
-domain_name = "syriii.me"
-ami_id = "ami-0cf986d229cbce35f"
-key_name = "dev_key"
-public_key_path = "~/Desktop/dev_key/dev_key.pub"
-
-aws_access_key = "AKIAWP7XOH7ZMWLBIROZ"
-aws_secret_key = "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"
+aws_access_key = "AKIAVX7A3FHLH4P42PYA"
+aws_secret_key = "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"
 tomcat_log_dir = "/home/centos"
