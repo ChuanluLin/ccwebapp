@@ -10,7 +10,7 @@ vpc_cidr_block = "10.0.0.0/16"
 vpc_name = "prod"
 
 domain_name = "zerolin.me"
-ami_id = "ami-0764ce2c63991aa14"
+ami_id = "ami-0ba00d524b4c8651f"
 key_name = "key"
 public_key_path = "~/.ssh/id_rsa.pub"
 
