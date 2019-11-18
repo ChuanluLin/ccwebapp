@@ -32,7 +32,7 @@ public class Recipe {
     @Column(name = "updated_ts", nullable = false)
     private String updated_ts;
 
-    @Column(name = "author_id", nullable = false)
+    @Column(name = "author", nullable = false)
     private String author_id;
 
     @Column(name = "cook_time_in_min", nullable = false)

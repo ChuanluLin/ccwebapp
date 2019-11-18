@@ -4,9 +4,7 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
-import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.AmazonSNSClient;
-import com.amazonaws.services.sns.AmazonSNSClientBuilder;
 import com.amazonaws.services.sns.model.CreateTopicRequest;
 import com.amazonaws.services.sns.model.CreateTopicResult;
 import com.amazonaws.services.sns.model.PublishRequest;
@@ -16,7 +14,6 @@ import com.csye6225.demo.exception.RequestLimit;
 import com.csye6225.demo.pojo.*;
 import com.csye6225.demo.repository.RecipeRepository;
 import com.csye6225.demo.repository.UserRepository;
-import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.timgroup.statsd.StatsDClient;
 import org.json.JSONArray;
@@ -24,7 +21,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -332,7 +328,7 @@ public class RecipeController {
 
         User user = userRepository.findByEmail(auth.getName());
         String userid = user.getId();
-        List<Recipe> recipeList = recipeRepository.findByAuthor_id(userid);
+        List<Recipe> recipeList = recipeRepository.findByAuthor(userid);
         if (recipeList.size() <= 0) {
             throw new DataValidationException(getDatetime(), 404, "Not Found", "Recipe Not Found");
         }
