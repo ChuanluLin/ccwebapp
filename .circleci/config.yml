@@ -74,5 +74,4 @@ jobs:
             --s3-location bucket=codedeploy.${DOMAIN_NAME},key=artifacts_${CIRCLE_SHA1}.zip,bundleType=zip \
             --description "Deployed via CircleCI on $(date "+%Y-%m-%d %H:%M:%S %z")"
     branches:
-      only:
-        - ASS7
+      ignore:
