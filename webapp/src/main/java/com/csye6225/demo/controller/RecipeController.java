@@ -64,7 +64,7 @@ public class RecipeController {
 
         User user = userRepository.findByEmail(auth.getName());
         String userid = user.getId();
-        newRecipe.setAuthor_id(userid);
+        newRecipe.setAuthor(userid);
         int cook_time_in_min;
         int prep_time_in_min;
         int servings;
@@ -169,7 +169,7 @@ public class RecipeController {
             throw new DataValidationException(getDatetime(), 404, "Not Found", "Recipe Not Found");
         }
 
-        String authorId = newRecipe.getAuthor_id();
+        String authorId = newRecipe.getAuthor();
         User user = userRepository.findByEmail(auth.getName());
         String userId = user.getId();
         if (!userId.equals(authorId)) {
@@ -277,7 +277,7 @@ public class RecipeController {
             throw new DataValidationException(getDatetime(), 404, "Not Found", "Recipe Not Found");
         }
 
-        String authorId = recipe.getAuthor_id();
+        String authorId = recipe.getAuthor();
         User user = userRepository.findByEmail(auth.getName());
         String userId = user.getId();
         if (!userId.equals(authorId)) {
