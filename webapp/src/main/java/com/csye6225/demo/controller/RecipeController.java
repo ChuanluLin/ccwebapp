@@ -335,9 +335,9 @@ public class RecipeController {
 
         String recipes = "";
         for (Recipe r : recipeList) {
-            ObjectMapper mapper = new ObjectMapper();
-            String newRecipeJSON = mapper.writeValueAsString(r);
-            recipes += newRecipeJSON;
+            String domain = "syriii.me:8080/recipe/get";
+            String recipeId = r.getId();
+            recipes += recipeId;
         }
 
 
@@ -354,7 +354,7 @@ public class RecipeController {
         System.out.println("CreateTopicRequest: " + snsClient.getCachedResponseMetadata(createTopicRequest));
 
         // Publish a message to an Amazon SNS topic.
-        String msg = "If you receive this message, publishing a message to an Amazon SNS topic works.";
+        String msg = recipes;
         PublishRequest publishRequest = new PublishRequest(createTopicResponse.getTopicArn(), msg);
         PublishResult publishResponse = snsClient.publish(publishRequest);
 

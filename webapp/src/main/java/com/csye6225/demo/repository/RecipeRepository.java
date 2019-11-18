@@ -15,3 +15,4 @@ public interface RecipeRepository extends CrudRepository<Recipe, Integer> {
 
     public List<Recipe> findByAuthor(String author);
 }
+ 
