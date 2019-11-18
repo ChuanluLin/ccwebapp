@@ -59,7 +59,6 @@ public class RecipeController {
         this.statsd = statsd;
     }
 
-    @RequestLimit
     @PostMapping(path = "/v1/recipe/", consumes = "application/json", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> createRecipe(@RequestBody String recipeJSON, HttpServletResponse response) throws IOException, JSONException {
@@ -164,7 +163,6 @@ public class RecipeController {
         return new ResponseEntity<>(newRecipeJSON, HttpStatus.CREATED);
     }
 
-    @RequestLimit
     @PutMapping(path = "/v1/recipe/{id}", consumes = "application/json", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> recipeUpdate(@PathVariable("id") String id, @RequestBody String recipeJSON, HttpServletResponse response) throws IOException, JSONException {
@@ -271,7 +269,7 @@ public class RecipeController {
         return new ResponseEntity<>(newRecipeJSON, HttpStatus.OK);
     }
 
-    @RequestLimit
+
     @DeleteMapping(path = "/v1/recipe/{id}", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> recipeDelete(@PathVariable("id") String id, HttpServletResponse response) throws IOException {
@@ -295,7 +293,7 @@ public class RecipeController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @RequestLimit
+
     @GetMapping(path = "/v1/recipe/{id}", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> recipeGET(@PathVariable("id") String id) throws IOException {
@@ -309,7 +307,7 @@ public class RecipeController {
         return new ResponseEntity<>(recipeJSON, HttpStatus.OK);
     }
 
-    @RequestLimit
+
     @GetMapping(path = "/v1/recipes", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> newestrecipeGET() throws IOException {

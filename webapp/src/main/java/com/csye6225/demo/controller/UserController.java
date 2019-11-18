@@ -31,7 +31,7 @@ public class UserController {
         this.statsd = statsd;
     }
 
-    @RequestLimit
+
     @RequestMapping(path = "/v1/user", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> create(@RequestBody String userJSON, HttpServletResponse response) throws IOException {
@@ -78,7 +78,7 @@ public class UserController {
         }
     }
 
-    @RequestLimit
+
     @RequestMapping(path = "/v1/user/self", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> update(@RequestBody String userJSON, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -115,7 +115,7 @@ public class UserController {
         }
     }
 
-    @RequestLimit
+
     @RequestMapping(path = "/v1/user/self", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> GET(HttpServletRequest request, HttpServletResponse response) throws IOException {
