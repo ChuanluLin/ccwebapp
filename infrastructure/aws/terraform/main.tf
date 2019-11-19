@@ -32,6 +32,26 @@ module "app"{
   key_name = "${var.key_name}"
   public_key_path = "${var.public_key_path}"
 
+  aws_vpc_id = module.vpc.vpc_id
+  subnet_id1 = module.vpc.public_subnets_id1
+  subnet_id2 = module.vpc.public_subnets_id2
+  subnet_id3 = module.vpc.public_subnets_id3
+  aws_access_key = "${var.aws_access_key}"
+  aws_secret_key = "${var.aws_secret_key}"
+  tomcat_log_dir = "${var.tomcat_log_dir}"
+}
+
+# Applicaiton module
+module "lambda"{
+  source = "./modules/lambda"
+  # name = "csye6225-aws-lambda"
+  aws_profile = "${var.aws_profile}"
+  aws_region = "${var.aws_region}"
+
+  domain_name = "${var.domain_name}"
+  ami_id = "${var.ami_id}"
+  aws_key_pair_id = module.app.aws_key_pair_id
+  public_key_path = "${var.public_key_path}"
 
   aws_vpc_id = module.vpc.vpc_id
   subnet_id1 = module.vpc.public_subnets_id1
