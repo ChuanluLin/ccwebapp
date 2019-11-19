@@ -1,6 +1,7 @@
 package com.csye6225.demo.controller;
 
 import com.csye6225.demo.exception.DataValidationException;
+import com.csye6225.demo.exception.RequestLimit;
 import com.csye6225.demo.pojo.*;
 import com.csye6225.demo.repository.RecipeRepository;
 import com.csye6225.demo.repository.UserRepository;
@@ -38,6 +39,7 @@ public class RecipeController {
         this.statsd = statsd;
     }
 
+    @RequestLimit
     @PostMapping(path = "/v1/recipe/", consumes = "application/json", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> createRecipe(@RequestBody String recipeJSON, HttpServletResponse response) throws IOException, JSONException{
@@ -142,6 +144,7 @@ public class RecipeController {
         return new ResponseEntity<>(newRecipeJSON, HttpStatus.CREATED);
     }
 
+    @RequestLimit
     @PutMapping(path = "/v1/recipe/{id}", consumes = "application/json", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> recipeUpdate(@PathVariable("id") String id, @RequestBody String recipeJSON, HttpServletResponse response) throws IOException, JSONException {
@@ -248,6 +251,7 @@ public class RecipeController {
         return new ResponseEntity<>(newRecipeJSON, HttpStatus.OK);
     }
 
+    @RequestLimit
     @DeleteMapping(path = "/v1/recipe/{id}", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> recipeDelete(@PathVariable("id") String id, HttpServletResponse response) throws IOException {
@@ -271,6 +275,7 @@ public class RecipeController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @RequestLimit
     @GetMapping(path = "/v1/recipe/{id}", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> recipeGET(@PathVariable("id") String id) throws IOException {
@@ -284,6 +289,7 @@ public class RecipeController {
         return new ResponseEntity<>(recipeJSON,HttpStatus.OK) ;
     }
 
+    @RequestLimit
     @GetMapping(path = "/v1/recipes", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> newestrecipeGET() throws IOException {
@@ -297,6 +303,32 @@ public class RecipeController {
         String recipeJSON = mapper.writeValueAsString(newRecipe);
         return new ResponseEntity<>(recipeJSON,HttpStatus.OK) ;
     }
+
+    @RequestLimit
+    @PostMapping(path = "/v1/myrecipes", consumes = "application/json", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<String> getMyRecipes() throws IOException, JSONException{
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        Recipe newRecipe = new Recipe();
+
+        User user = userRepository.findByEmail(auth.getName());
+        String userid = user.getId();
+        List<Recipe> recipeList = recipeRepository.findByAuthor_id(userid);
+        if(recipeList.size() <= 0){
+            throw new DataValidationException(getDatetime(), 404, "Not Found", "Recipe Not Found");
+        }
+
+        String recipes = "";
+        for(Recipe r: recipeList){
+            ObjectMapper mapper = new ObjectMapper();
+            String newRecipeJSON = mapper.writeValueAsString(r);
+            recipes += newRecipeJSON;
+        }
+
+        return new ResponseEntity<>(recipes, HttpStatus.OK);
+    }
+
 
     public String getDatetime() {
         Date currentTime = new Date();
