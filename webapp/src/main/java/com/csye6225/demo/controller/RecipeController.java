@@ -328,16 +328,16 @@ public class RecipeController {
 
         User user = userRepository.findByEmail(auth.getName());
         String userid = user.getId();
+        String email = user.getEmail();
         List<Recipe> recipeList = recipeRepository.findByAuthor(userid);
         if (recipeList.size() <= 0) {
             throw new DataValidationException(getDatetime(), 404, "Not Found", "Recipe Not Found");
         }
 
-        String recipes = "";
+        String recipes = email +":";
         for (Recipe r : recipeList) {
-            String domain = "syriii.me:8080/recipe/get";
             String recipeId = r.getId();
-            recipes += recipeId;
+            recipes += ( recipeId + ";");
         }
 
 
@@ -362,8 +362,10 @@ public class RecipeController {
         System.out.println("MessageId: " + publishResponse.getMessageId());
 
 
-        return new ResponseEntity<>(recipes, HttpStatus.OK);
+        return new ResponseEntity<>("Request successed", HttpStatus.OK);
     }
+
+
 
 
     public String getDatetime() {

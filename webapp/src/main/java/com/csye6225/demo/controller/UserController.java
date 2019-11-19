@@ -135,7 +135,7 @@ public class UserController {
     }
 
     public boolean isEmail(String email) {
-        return email.matches("[a-zA-Z0-9_]+@[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)+");
+        return email.matches("\\w[-\\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\\.)+[A-Za-z]{2,14}");
     }
 
     public boolean isStrongPassword(String password) {
