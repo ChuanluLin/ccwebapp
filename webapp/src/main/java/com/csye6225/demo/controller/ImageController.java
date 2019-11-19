@@ -59,7 +59,7 @@ public class ImageController {
         this.statsd = statsd;
     }
 
-    @RequestLimit
+
     @PostMapping(path = "/v1/recipe/{id}/image", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file, @PathVariable("id") String id, HttpServletResponse response) throws IOException, JSONException {
@@ -133,7 +133,7 @@ public class ImageController {
         }
     }
 
-    @RequestLimit
+
     @DeleteMapping(path = "/v1/recipe/{id}/image/{imageId}", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> DeleteObject(@PathVariable("imageId") String imageid, @PathVariable("id") String id, HttpServletResponse response) throws IOException {
@@ -165,7 +165,7 @@ public class ImageController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @RequestLimit
+
     @GetMapping(path = "/v1/recipe/{id}/image/{imageId}", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> GetObject(@PathVariable("imageId") String imageid, @PathVariable("id") String id, HttpServletResponse response) throws IOException {
