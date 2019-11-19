@@ -86,3 +86,11 @@ variable "tomcat_log_dir"{
 variable "lambda_function_path" {
   description = "The JAR file path for lambda function as a placeholder"
 }
+
+variable "certificate_arn" {
+  description = "The ccl arn for load balance"
+}
+
+variable "web_acl_id" {
+  description = "The web acl id"
+}
