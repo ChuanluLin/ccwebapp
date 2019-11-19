@@ -82,3 +82,7 @@ variable "aws_secret_key"{
 variable "tomcat_log_dir"{
   description = "The log file's directory" 
 }
+
+variable "lambda_function_path" {
+  description = "The JAR file path for lambda function as a placeholder"
+}
