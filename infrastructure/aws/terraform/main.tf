@@ -31,6 +31,7 @@ module "app"{
   ami_id = "${var.ami_id}"
   key_name = "${var.key_name}"
   public_key_path = "${var.public_key_path}"
+  certificate_arn = "${var.certificate_arn}"
 
   aws_vpc_id = module.vpc.vpc_id
   subnet_id1 = module.vpc.public_subnets_id1
@@ -40,4 +41,14 @@ module "app"{
   aws_secret_key = "${var.aws_secret_key}"
   tomcat_log_dir = "${var.tomcat_log_dir}"
   lambda_function_path = "${var.lambda_function_path}"
+}
+
+# Applicaiton module
+module "waf"{
+  source = "./modules/waf"
+  # name = "csye6225-aws-waf"
+  aws_profile = "${var.aws_profile}"
+  aws_region = "${var.aws_region}"
+  aws_lb_arn = module.app.aws_lb_arn
+  web_acl_id = "${var.web_acl_id}"
 }

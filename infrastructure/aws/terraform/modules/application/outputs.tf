@@ -34,3 +34,7 @@ output "aws_db_instance_endpoint" {
   description = "The connection endpoint for RDS"
   value       = "${aws_db_instance.default.endpoint}"
 }
+
+output "aws_lb_arn" {
+  value       = "${aws_lb.default.arn}"
+}

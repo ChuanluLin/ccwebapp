@@ -532,6 +532,7 @@ resource "aws_lambda_function" "default" {
   environment {
     variables = {
       foo = "bar"
+      DOMAIN = "prod.${var.domain_name}"
     }
   }
 }
@@ -679,12 +680,19 @@ resource "aws_lb_listener" "default" {
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = "arn:aws:acm:us-east-1:350647533114:certificate/e0b4f882-7c2d-4cc0-aa50-13fee5f04651"
+  certificate_arn   = "${var.certificate_arn}"
 
   default_action {
     type             = "forward"
     target_group_arn = "${aws_lb_target_group.default.arn}"
   }
+}
+
+#Cloudformation stack for AWS WAF
+resource "aws_cloudformation_stack" "waf" {
+  name = "waf-stack"
+  template_url = "https://s3.amazonaws.com/codedeploy.${var.domain_name}/owasp_10_base.yml"
+  timeout_in_minutes = 60
 }
 
 # Route53 record
