@@ -688,13 +688,6 @@ resource "aws_lb_listener" "default" {
   }
 }
 
-#Cloudformation stack for AWS WAF
-resource "aws_cloudformation_stack" "waf" {
-  name = "waf-stack"
-  template_url = "https://s3.amazonaws.com/codedeploy.${var.domain_name}/owasp_10_base.yml"
-  timeout_in_minutes = 60
-}
-
 # Route53 record
 # resource "aws_route53_record" "lb_record" {
 #   zone_id = "ZGVN288LIGABC"
