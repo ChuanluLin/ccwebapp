@@ -18,13 +18,13 @@ output "aws_key_pair_name" {
   value = "${aws_key_pair.auth.key_name}"
 }
 
-output "aws_instance_ip" {
-  value = "${aws_instance.web.public_ip}"
-}
+# output "aws_instance_ip" {
+#   value = "${aws_instance.web.public_ip}"
+# }
 
-output "aws_instance_dns" {
-  value = "${aws_instance.web.public_dns}"
-}
+# output "aws_instance_dns" {
+#   value = "${aws_instance.web.public_dns}"
+# }
 
 output "aws_dynamodb_table_name" {
   value = "${aws_dynamodb_table.basic-dynamodb-table.name}"
@@ -33,4 +33,8 @@ output "aws_dynamodb_table_name" {
 output "aws_db_instance_endpoint" {
   description = "The connection endpoint for RDS"
   value       = "${aws_db_instance.default.endpoint}"
+}
+
+output "aws_lb_arn" {
+  value       = "${aws_lb.default.arn}"
 }

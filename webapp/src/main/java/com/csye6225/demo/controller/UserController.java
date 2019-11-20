@@ -1,5 +1,6 @@
 package com.csye6225.demo.controller;
 import com.csye6225.demo.exception.DataValidationException;
+import com.csye6225.demo.exception.RequestLimit;
 import com.csye6225.demo.pojo.User;
 import com.csye6225.demo.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +30,7 @@ public class UserController {
     public UserController(StatsDClient statsd) {
         this.statsd = statsd;
     }
+
 
     @RequestMapping(path = "/v1/user", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     @ResponseBody
@@ -76,6 +78,7 @@ public class UserController {
         }
     }
 
+
     @RequestMapping(path = "/v1/user/self", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> update(@RequestBody String userJSON, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -112,6 +115,7 @@ public class UserController {
         }
     }
 
+
     @RequestMapping(path = "/v1/user/self", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
     @ResponseBody
     public ResponseEntity<String> GET(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -131,7 +135,7 @@ public class UserController {
     }
 
     public boolean isEmail(String email) {
-        return email.matches("[a-zA-Z0-9_]+@[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)+");
+        return email.matches("\\w[-\\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\\.)+[A-Za-z]{2,14}");
     }
 
     public boolean isStrongPassword(String password) {

@@ -1,14 +1,7 @@
 package com.csye6225.demo.pojo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.validator.constraints.Range;
-import org.springframework.http.StreamingHttpOutputMessage;
 
 import javax.persistence.*;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -32,8 +25,8 @@ public class Recipe {
     @Column(name = "updated_ts", nullable = false)
     private String updated_ts;
 
-    @Column(name = "author_id", nullable = false)
-    private String author_id;
+    @Column(name = "author", nullable = false)
+    private String author;
 
     @Column(name = "cook_time_in_min", nullable = false)
     private int cook_time_in_min;
@@ -93,12 +86,12 @@ public class Recipe {
         this.updated_ts = updated_ts;
     }
 
-    public String getAuthor_id() {
-        return author_id;
+    public String getAuthor() {
+        return author;
     }
 
-    public void setAuthor_id(String author_id) {
-        this.author_id = author_id;
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public int getCook_time_in_min() {

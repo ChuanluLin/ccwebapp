@@ -22,7 +22,7 @@ public class RecipeRepositoryTest {
     public void findById() {
         String title = "Kung Pao Chicken";
         Recipe recipe_create = new Recipe();
-        recipe_create.setAuthor_id("8a8080376d61df6b016d61e06d260000");
+        recipe_create.setAuthor("8a8080376d61df6b016d61e06d260000");
         recipe_create.setTitle(title);
         recipe_create.setCreated_ts("2019-09-25T17:29:45.908Z");
         recipe_create.setCusine("Chinese");

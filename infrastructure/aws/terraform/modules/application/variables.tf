@@ -61,3 +61,11 @@ variable "aws_secret_key" {
 variable "tomcat_log_dir" {
   description = "The directory for Tomcat access log created in EC2 instance"
 }
+
+variable "lambda_function_path" {
+  description = "The JAR file path for lambda function as a placeholder"
+}
+
+variable "certificate_arn" {
+  description = "The ccl arn for load balance"
+}

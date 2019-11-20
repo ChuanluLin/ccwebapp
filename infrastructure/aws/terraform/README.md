@@ -54,10 +54,14 @@ domain_name = "*.me"
 ami_id = "ami-*************"
 key_name = "key"
 public_key_path = "~/key.pub"
+lambda_function_path = "~/Desktop/lambda-1.0-SNAPSHOT.jar"
+certificate_arn = "{certificate arn that you applied}}"
+web_acl_id = ""
 
 aws_access_key = "*********"
 aws_secret_key = "************"
 tomcat_log_dir = "/home/centos"
+
 
 ```
 

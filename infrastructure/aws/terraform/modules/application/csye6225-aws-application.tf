@@ -22,26 +22,26 @@ resource "aws_security_group" "application" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # HTTP access from the VPC
+  # HTTP access from the load balancer
   ingress {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    security_groups = ["${aws_security_group.loadbalancer.id}"]
   }
 
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    security_groups = ["${aws_security_group.loadbalancer.id}"]
   }
 
   ingress {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    security_groups = ["${aws_security_group.loadbalancer.id}"]
   }
 
   # outbound internet access
@@ -67,6 +67,32 @@ resource "aws_security_group" "database" {
     to_port     = 3306
     protocol    = "tcp"
     security_groups = ["${aws_security_group.application.id}"]
+  }
+
+  # outbound internet access
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# Securtiy Group - Load Balancer
+resource "aws_security_group" "loadbalancer" {
+  vpc_id      = "${var.aws_vpc_id}"
+
+  tags = {
+    Name = "loadbalancer"
+  }
+
+  # LB rules
+  # HTTPS access from the anywhere
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # outbound internet access
@@ -159,60 +185,60 @@ resource "aws_key_pair" "auth" {
 }
 
 # EC2 instance
-resource "aws_instance" "web" {
-  # connection {
-  #   # The default username for our AMI
-  #   user = "centos"
-  #   host = "${self.public_ip}"
-  #   # The connection will use the local SSH agent for authentication.
-  #   private_key = "${file("")}"
-  # }
+# resource "aws_instance" "web" {
+#   # connection {
+#   #   # The default username for our AMI
+#   #   user = "centos"
+#   #   host = "${self.public_ip}"
+#   #   # The connection will use the local SSH agent for authentication.
+#   #   private_key = "${file("")}"
+#   # }
 
-  instance_type           = "t2.micro"
-  disable_api_termination = false
-  ami = "${var.ami_id}"
+#   instance_type           = "t2.micro"
+#   disable_api_termination = false
+#   ami = "${var.ami_id}"
 
-  # The name of our SSH keypair we created above.
-  key_name = "${aws_key_pair.auth.id}"
+#   # The name of our SSH keypair we created above.
+#   key_name = "${aws_key_pair.auth.id}"
 
-  # Our Security group to allow HTTP and SSH access
-  vpc_security_group_ids = ["${aws_security_group.application.id}"]
+#   # Our Security group to allow HTTP and SSH access
+#   vpc_security_group_ids = ["${aws_security_group.application.id}"]
 
-  subnet_id = "${var.subnet_id1}"
+#   subnet_id = "${var.subnet_id1}"
 
-  ebs_block_device {
-      device_name           = "/dev/sda1"  
-      delete_on_termination = true
-  }
+#   ebs_block_device {
+#       device_name           = "/dev/sda1"  
+#       delete_on_termination = true
+#   }
 
-  root_block_device {
-      volume_type = "gp2"
-      volume_size = 20
-  }
+#   root_block_device {
+#       volume_type = "gp2"
+#       volume_size = 20
+#   }
 
-  # This EC2 instance must be created only after the RDS instance has been created.
-  depends_on = [aws_db_instance.default]
+#   # This EC2 instance must be created only after the RDS instance has been created.
+#   depends_on = [aws_db_instance.default]
 
-  # IAM
-  iam_instance_profile = "${aws_iam_instance_profile.codedeployec2.name}"
+#   # IAM
+#   iam_instance_profile = "${aws_iam_instance_profile.codedeployec2.name}"
 
-  # user_data  = "${file("ec2_user_data.sh")}"
-  user_data = <<-EOF
-          #! /bin/bash
-          echo export DB_ENDPOINT=${aws_db_instance.default.endpoint}>>/etc/profile
-          echo export DB_USER=${aws_db_instance.default.username}>>/etc/profile
-          echo export DB_PASSSWORD='${aws_db_instance.default.password}'>>/etc/profile
-          echo export AWS_ACCESS_KEY=${var.aws_access_key}>>/etc/profile
-          echo export AWS_SECRET_KEY=${var.aws_secret_key}>>/etc/profile
-          echo export AWS_BUCKET_NAME=webapp.${var.domain_name}>>/etc/profile
-          echo export TOMCAT_LOG_DIR=${var.tomcat_log_dir}>>/etc/profile
-  EOF
+#   # user_data  = "${file("ec2_user_data.sh")}"
+#   user_data = <<-EOF
+#           #! /bin/bash
+#           echo export DB_ENDPOINT=${aws_db_instance.default.endpoint}>>/etc/profile
+#           echo export DB_USER=${aws_db_instance.default.username}>>/etc/profile
+#           echo export DB_PASSSWORD='${aws_db_instance.default.password}'>>/etc/profile
+#           echo export AWS_ACCESS_KEY=${var.aws_access_key}>>/etc/profile
+#           echo export AWS_SECRET_KEY=${var.aws_secret_key}>>/etc/profile
+#           echo export AWS_BUCKET_NAME=webapp.${var.domain_name}>>/etc/profile
+#           echo export TOMCAT_LOG_DIR=${var.tomcat_log_dir}>>/etc/profile
+#   EOF
 
-  tags = {
-    Name       = "csye6225-ec2"
-    Enironment = "${var.aws_profile}"
-  }
-}
+#   tags = {
+#     Name       = "csye6225-ec2"
+#     Enironment = "${var.aws_profile}"
+#   }
+# }
 
 resource "aws_iam_instance_profile" "codedeployec2" {
   name = "CodeDeployEC2ServiceRoleProfile"
@@ -345,56 +371,6 @@ resource "aws_iam_policy" "policy2" {
 EOF
 }
 
-resource "aws_iam_policy" "policy3" {
-  name        = "circleci-ec2-ami"
-  description = "Allows CircleCI to use EC2 instance."
-
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [{
-      "Effect": "Allow",
-      "Action" : [
-        "ec2:AttachVolume",
-        "ec2:AuthorizeSecurityGroupIngress",
-        "ec2:CopyImage",
-        "ec2:CreateImage",
-        "ec2:CreateKeypair",
-        "ec2:CreateSecurityGroup",
-        "ec2:CreateSnapshot",
-        "ec2:CreateTags",
-        "ec2:CreateVolume",
-        "ec2:DeleteKeyPair",
-        "ec2:DeleteSecurityGroup",
-        "ec2:DeleteSnapshot",
-        "ec2:DeleteVolume",
-        "ec2:DeregisterImage",
-        "ec2:DescribeImageAttribute",
-        "ec2:DescribeImages",
-        "ec2:DescribeInstances",
-        "ec2:DescribeInstanceStatus",
-        "ec2:DescribeRegions",
-        "ec2:DescribeSecurityGroups",
-        "ec2:DescribeSnapshots",
-        "ec2:DescribeSubnets",
-        "ec2:DescribeTags",
-        "ec2:DescribeVolumes",
-        "ec2:DetachVolume",
-        "ec2:GetPasswordData",
-        "ec2:ModifyImageAttribute",
-        "ec2:ModifyInstanceAttribute",
-        "ec2:ModifySnapshotAttribute",
-        "ec2:RegisterImage",
-        "ec2:RunInstances",
-        "ec2:StopInstances",
-        "ec2:TerminateInstances"
-      ],
-      "Resource" : "*"
-  }]
-}
-EOF
-}
-
 resource "aws_iam_policy" "policy4" {
   name        = "CodeDeploy-EC2-S3"
   description = "Allows EC2 instances to read data from S3 buckets. This policy is required for EC2 instances to download latest application revision."
@@ -428,11 +404,6 @@ resource "aws_iam_user_policy_attachment" "attach1" {
 resource "aws_iam_user_policy_attachment" "attach2" {
   user       = "circleci"
   policy_arn = "${aws_iam_policy.policy2.arn}"
-}
-
-resource "aws_iam_user_policy_attachment" "attach3" {
-  user       = "circleci"
-  policy_arn = "${aws_iam_policy.policy3.arn}"
 }
 
 # IAM Role
@@ -474,6 +445,7 @@ resource "aws_codedeploy_deployment_group" "default" {
   app_name              = "${aws_codedeploy_app.default.name}"
   deployment_group_name = "csye6225-webapp-deployment"
   service_role_arn      = "${aws_iam_role.codedeployrole.arn}"
+  autoscaling_groups    = ["${aws_autoscaling_group.default.name}"]
 
   ec2_tag_set {
     ec2_tag_filter {
@@ -517,9 +489,236 @@ resource "aws_iam_role_policy_attachment" "attach4" {
   role       = "${aws_iam_role.codedeployec2role.name}"
 }
 
-#
 # IAM Role Policy Attachment
 resource "aws_iam_role_policy_attachment" "attachCloudWatch" {
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
   role       = "${aws_iam_role.codedeployec2role.name}"
 }
+
+
+## Assignment 8
+# Lambda
+resource "aws_iam_role" "lambda_exec_role" {
+  name = "lambda_exec_role"
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+
+# IAM Role Policy Attachment for Lambda Role
+resource "aws_iam_role_policy_attachment" "attachlambda1" {
+  policy_arn = "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"
+  role       = "${aws_iam_role.lambda_exec_role.name}"
+}
+
+# IAM Role Policy Attachment for Lambda Role
+resource "aws_iam_role_policy_attachment" "attachlambda2" {
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  role       = "${aws_iam_role.lambda_exec_role.name}"
+}
+
+# IAM Role Policy Attachment for Lambda Role
+resource "aws_iam_role_policy_attachment" "attachlambda3" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSESFullAccess"
+  role       = "${aws_iam_role.lambda_exec_role.name}"
+}
+
+# IAM Role Policy Attachment for Lambda Role
+resource "aws_iam_role_policy_attachment" "attachlambda4" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+  role       = "${aws_iam_role.lambda_exec_role.name}"
+}
+
+resource "aws_sns_topic" "default" {
+  name = "email_request"
+}
+
+resource "aws_lambda_function" "default" {
+  filename      = "${var.lambda_function_path}"
+  function_name = "snsandlambda"
+  role          = "${aws_iam_role.lambda_exec_role.arn}"
+  handler       = "lambda.Main::myHandler"
+  source_code_hash = "${filebase64sha256("${var.lambda_function_path}")}"
+
+  runtime = "java8"
+  memory_size = 1024
+  timeout = 10
+
+  environment {
+    variables = {
+      DOMAIN = "prod.${var.domain_name}"
+    }
+  }
+}
+
+# Allow the SNS topic to invoke the Lambda
+resource "aws_lambda_permission" "with_sns" {
+  statement_id  = "AllowExecutionFromSNS"
+  action        = "lambda:InvokeFunction"
+  function_name = "${aws_lambda_function.default.function_name}"
+  principal     = "sns.amazonaws.com"
+  source_arn    = "${aws_sns_topic.default.arn}"
+}
+
+# Subscribe the Lambda to the SNS topic
+resource "aws_sns_topic_subscription" "sns_trigger_lambda" {
+  topic_arn = "${aws_sns_topic.default.arn}"
+  protocol  = "lambda"
+  endpoint  = "${aws_lambda_function.default.arn}"
+}
+
+# Auto Scaling Group
+resource "aws_launch_configuration" "default" {
+  name          = "asg_launch_config"
+  image_id      = "${var.ami_id}"
+  instance_type = "t2.micro"
+  associate_public_ip_address = true	
+
+  # The name of our SSH keypair we created above.
+  key_name = "${aws_key_pair.auth.id}"
+
+  # Our Security group to allow HTTP and SSH access
+  security_groups = ["${aws_security_group.application.id}"]
+
+  # This EC2 instance must be created only after the RDS instance has been created.
+  depends_on = [aws_db_instance.default]
+
+  iam_instance_profile = "${aws_iam_instance_profile.codedeployec2.name}"
+
+  user_data = <<-EOF
+          #! /bin/bash
+          echo export DB_ENDPOINT=${aws_db_instance.default.endpoint}>>/etc/profile
+          echo export DB_USER=${aws_db_instance.default.username}>>/etc/profile
+          echo export DB_PASSSWORD='${aws_db_instance.default.password}'>>/etc/profile
+          echo export AWS_ACCESS_KEY=${var.aws_access_key}>>/etc/profile
+          echo export AWS_SECRET_KEY=${var.aws_secret_key}>>/etc/profile
+          echo export AWS_BUCKET_NAME=webapp.${var.domain_name}>>/etc/profile
+          echo export TOMCAT_LOG_DIR=${var.tomcat_log_dir}>>/etc/profile
+  EOF
+}
+
+resource "aws_autoscaling_group" "default" {
+  desired_capacity     = 3
+  max_size             = 10
+  min_size             = 3
+  launch_configuration = "${aws_launch_configuration.default.name}"
+  default_cooldown     = 60
+  vpc_zone_identifier  = ["${var.subnet_id1}","${var.subnet_id2}","${var.subnet_id3}"]
+  target_group_arns    = ["${aws_lb_target_group.default.arn}"]
+
+  # add tags for the EC2 instances created
+  tags = [
+    {
+      key                 = "Name"
+      value               = "csye6225-ec2"
+      propagate_at_launch = true
+    }
+  ]
+}
+
+# Auto Scaling Group Policy
+resource "aws_autoscaling_policy" "CPUAlarmHighPolicy" {
+  name                   = "CPUAlarmHighPolicy"
+  scaling_adjustment     = 1
+  adjustment_type        = "ChangeInCapacity"
+  cooldown               = 60
+  autoscaling_group_name = "${aws_autoscaling_group.default.name}"
+}
+
+resource "aws_autoscaling_policy" "CPUAlarmLowPolicy" {
+  name                   = "CPUAlarmLowPolicy"
+  scaling_adjustment     = -1
+  adjustment_type        = "ChangeInCapacity"
+  cooldown               = 60
+  autoscaling_group_name = "${aws_autoscaling_group.default.name}"
+}
+
+resource "aws_cloudwatch_metric_alarm" "CPUAlarmHigh" {
+  alarm_name          = "CPUAlarmHigh"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = "60"
+  statistic           = "Average"
+  threshold           = "5"
+
+  dimensions = {
+    AutoScalingGroupName = "${aws_autoscaling_group.default.name}"
+  }
+
+  alarm_description = "Scale-up if CPU > 5% for 2 minutes"
+  alarm_actions     = ["${aws_autoscaling_policy.CPUAlarmHighPolicy.arn}"]
+}
+
+resource "aws_cloudwatch_metric_alarm" "CPUAlarmLow" {
+  alarm_name          = "CPUAlarmLow"
+  comparison_operator = "LessThanOrEqualToThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = "60"
+  statistic           = "Average"
+  threshold           = "3"
+
+  dimensions = {
+    AutoScalingGroupName = "${aws_autoscaling_group.default.name}"
+  }
+
+  alarm_description = "Scale-up if CPU < 3% for 2 minutes"
+  alarm_actions     = ["${aws_autoscaling_policy.CPUAlarmLowPolicy.arn}"]
+}
+
+# Load Balancer
+resource "aws_lb" "default" {
+  name               = "csye6225-lb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = ["${aws_security_group.loadbalancer.id}"]
+  subnets            = ["${var.subnet_id1}","${var.subnet_id2}","${var.subnet_id3}"]
+
+  tags = {
+    Environment = "${var.aws_profile}"
+  }
+}
+
+resource "aws_lb_target_group" "default" {
+  name     = "csye6225-lb-tg"
+  port     = 8080
+  protocol = "HTTP"
+  vpc_id   = "${var.aws_vpc_id}"
+}
+
+resource "aws_lb_listener" "default" {
+  load_balancer_arn = "${aws_lb.default.arn}"
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = "${var.certificate_arn}"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = "${aws_lb_target_group.default.arn}"
+  }
+}
+
+# Route53 record
+# resource "aws_route53_record" "lb_record" {
+#   zone_id = "ZGVN288LIGABC"
+#   name    = "prod.tianlifeng.me"
+#   type    = "CNAME"
+#   ttl     = "300"
+#   records = ["${aws_lb.default.dns_name}"]
+# }

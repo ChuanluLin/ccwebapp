@@ -82,3 +82,15 @@ variable "aws_secret_key"{
 variable "tomcat_log_dir"{
   description = "The log file's directory" 
 }
+
+variable "lambda_function_path" {
+  description = "The JAR file path for lambda function as a placeholder"
+}
+
+variable "certificate_arn" {
+  description = "The ccl arn for load balance"
+}
+
+variable "web_acl_id" {
+  description = "The web acl id"
+}
