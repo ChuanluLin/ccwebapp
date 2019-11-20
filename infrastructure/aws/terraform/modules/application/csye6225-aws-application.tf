@@ -419,6 +419,7 @@ resource "aws_codedeploy_deployment_group" "default" {
   app_name              = "${aws_codedeploy_app.default.name}"
   deployment_group_name = "csye6225-webapp-deployment"
   service_role_arn      = "${aws_iam_role.codedeployrole.arn}"
+  autoscaling_groups    = ["${aws_autoscaling_group.default.name}"]
 
   ec2_tag_set {
     ec2_tag_filter {
@@ -670,7 +671,7 @@ resource "aws_lb" "default" {
 
 resource "aws_lb_target_group" "default" {
   name     = "csye6225-lb-tg"
-  port     = 80
+  port     = 8080
   protocol = "HTTP"
   vpc_id   = "${var.aws_vpc_id}"
 }
