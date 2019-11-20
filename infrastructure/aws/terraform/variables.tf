@@ -88,9 +88,13 @@ variable "lambda_function_path" {
 }
 
 variable "certificate_arn" {
-  description = "The ccl arn for load balance"
+  description = "The arn of ssl certificate for load balancer"
 }
 
 variable "web_acl_id" {
   description = "The web acl id"
+}
+
+variable "route53_zone_id" {
+  description = "The hosted zone id for the domain name in Route53"
 }
