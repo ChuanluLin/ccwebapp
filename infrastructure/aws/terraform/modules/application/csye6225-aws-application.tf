@@ -558,7 +558,7 @@ resource "aws_lambda_function" "default" {
 
   environment {
     variables = {
-      foo = "bar"
+      DOMAIN = "prod.${var.domain_name}"
     }
   }
 }
