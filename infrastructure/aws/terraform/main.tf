@@ -41,6 +41,7 @@ module "app"{
   aws_secret_key = "${var.aws_secret_key}"
   tomcat_log_dir = "${var.tomcat_log_dir}"
   lambda_function_path = "${var.lambda_function_path}"
+  route53_zone_id = "${var.route53_zone_id}"
 }
 
 # Applicaiton module

@@ -8,7 +8,6 @@ provider "aws" {
 resource "aws_cloudformation_stack" "waf" {
   name = "waf-stack"
   template_url = "https://s3.amazonaws.com/codedeploy.${var.domain_name}/owasp_10_base.yml"
-  timeout_in_minutes = 60
 }
 
 resource "aws_wafregional_web_acl_association" "default" {

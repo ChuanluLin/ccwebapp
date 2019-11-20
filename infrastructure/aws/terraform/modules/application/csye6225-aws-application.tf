@@ -258,6 +258,11 @@ resource "aws_dynamodb_table" "basic-dynamodb-table" {
     type = "S"
   }
 
+  ttl {
+    attribute_name = "ttl"
+    enabled        = true
+  }
+
   tags = {
     Name        = "dynamodb-table-1"
   }
@@ -715,10 +720,14 @@ resource "aws_lb_listener" "default" {
 }
 
 # Route53 record
-# resource "aws_route53_record" "lb_record" {
-#   zone_id = "ZGVN288LIGABC"
-#   name    = "prod.tianlifeng.me"
-#   type    = "CNAME"
-#   ttl     = "300"
-#   records = ["${aws_lb.default.dns_name}"]
-# }
+resource "aws_route53_record" "lb_record" {
+  zone_id = "${var.route53_zone_id}"
+  name    = "prod.${var.domain_name}"
+  type    = "A"
+
+  alias {
+    name                   = "${aws_lb.default.dns_name}"
+    zone_id                = "${aws_lb.default.zone_id}"
+    evaluate_target_health = true
+  }
+}
