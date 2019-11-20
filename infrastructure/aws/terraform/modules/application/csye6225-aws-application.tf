@@ -445,20 +445,9 @@ resource "aws_codedeploy_app" "default" {
   name = "csye6225-webapp"
 }
 
-#CodeDeployment config
-resource "aws_codedeploy_deployment_config" "default" {
-  deployment_config_name = "codeDeploy-config"
-
-  minimum_healthy_hosts {
-    type  = "HOST_COUNT"
-    value = 1
-  }
-}
-
 # CodeDeploy Deployment Group
 resource "aws_codedeploy_deployment_group" "default" {
   app_name              = "${aws_codedeploy_app.default.name}"
-  deployment_config_name = "${aws_codedeploy_deployment_config.default.deployment_config_name}"
   deployment_group_name = "csye6225-webapp-deployment"
   service_role_arn      = "${aws_iam_role.codedeployrole.arn}"
   autoscaling_groups    = ["${aws_autoscaling_group.default.name}"]
