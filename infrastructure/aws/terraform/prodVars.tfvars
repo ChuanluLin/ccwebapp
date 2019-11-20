@@ -9,7 +9,6 @@ subnet3_cidr_block = "10.0.3.0/24"
 vpc_cidr_block = "10.0.0.0/16"
 vpc_name = "prod"
 
-
 domain_name = "syriii.me"
 ami_id = "ami-0e3987f80dd553905"
 key_name = "dev_key"

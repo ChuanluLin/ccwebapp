@@ -49,6 +49,7 @@ module "waf"{
   # name = "csye6225-aws-waf"
   aws_profile = "${var.aws_profile}"
   aws_region = "${var.aws_region}"
+  domain_name = "${var.domain_name}"
   aws_lb_arn = module.app.aws_lb_arn
   web_acl_id = "${var.web_acl_id}"
 }

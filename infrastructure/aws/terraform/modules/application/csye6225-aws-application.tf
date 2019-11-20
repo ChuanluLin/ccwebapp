@@ -22,26 +22,26 @@ resource "aws_security_group" "application" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # HTTP access from the VPC
+  # HTTP access from the load balancer
   ingress {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    security_groups = ["${aws_security_group.loadbalancer.id}"]
   }
 
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    security_groups = ["${aws_security_group.loadbalancer.id}"]
   }
 
   ingress {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    security_groups = ["${aws_security_group.loadbalancer.id}"]
   }
 
   # outbound internet access
@@ -67,6 +67,32 @@ resource "aws_security_group" "database" {
     to_port     = 3306
     protocol    = "tcp"
     security_groups = ["${aws_security_group.application.id}"]
+  }
+
+  # outbound internet access
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# Securtiy Group - Load Balancer
+resource "aws_security_group" "loadbalancer" {
+  vpc_id      = "${var.aws_vpc_id}"
+
+  tags = {
+    Name = "loadbalancer"
+  }
+
+  # LB rules
+  # HTTPS access from the anywhere
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # outbound internet access
@@ -419,6 +445,7 @@ resource "aws_codedeploy_deployment_group" "default" {
   app_name              = "${aws_codedeploy_app.default.name}"
   deployment_group_name = "csye6225-webapp-deployment"
   service_role_arn      = "${aws_iam_role.codedeployrole.arn}"
+  autoscaling_groups    = ["${aws_autoscaling_group.default.name}"]
 
   ec2_tag_set {
     ec2_tag_filter {
@@ -531,7 +558,6 @@ resource "aws_lambda_function" "default" {
 
   environment {
     variables = {
-      foo = "bar"
       DOMAIN = "prod.${var.domain_name}"
     }
   }
@@ -660,7 +686,7 @@ resource "aws_lb" "default" {
   name               = "csye6225-lb"
   internal           = false
   load_balancer_type = "application"
-  #security_groups    = ["${aws_security_group.lb_sg.id}"]
+  security_groups    = ["${aws_security_group.loadbalancer.id}"]
   subnets            = ["${var.subnet_id1}","${var.subnet_id2}","${var.subnet_id3}"]
 
   tags = {
@@ -688,13 +714,6 @@ resource "aws_lb_listener" "default" {
   }
 }
 
-#Cloudformation stack for AWS WAF
-resource "aws_cloudformation_stack" "waf" {
-  name = "waf-stack"
-  template_url = "https://s3.amazonaws.com/codedeploy.${var.domain_name}/owasp_10_base.yml"
-  timeout_in_minutes = 60
-}
-
 # Route53 record
 # resource "aws_route53_record" "lb_record" {
 #   zone_id = "ZGVN288LIGABC"
@@ -702,17 +721,4 @@ resource "aws_cloudformation_stack" "waf" {
 #   type    = "CNAME"
 #   ttl     = "300"
 #   records = ["${aws_lb.default.dns_name}"]
-# }
-
-# CloudFormation
-# resource "aws_cloudformation_stack" "waf" {
-#   name = "waf-stack"
-#   template_url = "https://s3.us-east-2.amazonaws.com/awswaf-owasp/owasp_10_base.yml"
-#   timeout_in_minutes = 60
-# }
-
-# WAF and ALB Association
-# resource "aws_wafregional_web_acl_association" "default" {
-#   resource_arn = "${aws_lb.default.arn}"
-#   web_acl_id   = "${aws_wafregional_web_acl.foo.id}"
 # }
