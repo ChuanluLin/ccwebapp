@@ -670,7 +670,7 @@ resource "aws_lb" "default" {
 
 resource "aws_lb_target_group" "default" {
   name     = "csye6225-lb-tg"
-  port     = 80
+  port     = 8080
   protocol = "HTTP"
   vpc_id   = "${var.aws_vpc_id}"
 }
