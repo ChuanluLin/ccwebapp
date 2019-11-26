@@ -1,0 +1,2 @@
+# JMeter generated Authorization file
+https://prod.zerolin.me/v1/recipe/	lin.chua@husky.neu.edu				BASIC
