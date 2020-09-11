@@ -2,11 +2,11 @@
 
 ## Team Information
 
-| Name | NEU ID | Email Address |
+| Name |
 | --- | --- | --- |
-|Chuanlu Lin|001839299|lin.chua@husky.neu.edu|
-|Shangrui Xie|001870007|xie.sha@husky.neu.edu|
-|Tianli Feng|001825503|feng.tian@husky.neu.edu|
+|Chuanlu Lin|
+|Shangrui Xie|
+|Tianli Feng|
 
 ## Technology Stack
 
