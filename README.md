@@ -3,7 +3,7 @@
 ## Team Information
 
 | Name |
-| --- | --- | --- |
+| --- |
 |Chuanlu Lin|
 |Shangrui Xie|
 |Tianli Feng|
